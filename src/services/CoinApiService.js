@@ -32,11 +32,11 @@ export const fullCoinListingQueryOptions = () => {
   });
 };
 
-export const qCoinSGDChartQueryOptions = (coinId, days) => {
+export const qCoinUSDChartQueryOptions = (coinId, days) => {
   const endpoint =
-    "coins/" + coinId + "/market_chart?vs_currency=sgd&days=" + days;
+    "coins/" + coinId + "/market_chart?vs_currency=usd&days=" + days;
   return queryOptions({
-    queryKey: ["qCoinSGDChart"],
+    queryKey: ["qCoinUSDChart"],
     queryFn: () => fetchData(endpoint),
     staleTime: Infinity,
     gcTime: Infinity,
@@ -54,13 +54,13 @@ export const qCoinTrendingQueryOptions = () => {
   });
 };
 
-export const qCoinsSGDPriceQueryOptions = (coinSymbols) => {
+export const qCoinsUSDPriceQueryOptions = (coinSymbols) => {
   const endpoint =
-    "coins/markets?vs_currency=sgd&symbols=" +
+    "coins/markets?vs_currency=usd&symbols=" +
     coinSymbols +
     "&include_tokens=top&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h&locale=en&precision=full";
   return queryOptions({
-    queryKey: ["qCoinsSGDPrice"],
+    queryKey: ["qCoinsUSDPrice"],
     queryFn: () => fetchData(endpoint),
     staleTime: Infinity,
     gcTime: Infinity,
