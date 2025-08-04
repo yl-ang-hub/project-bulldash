@@ -31,17 +31,12 @@ const PortfolioModal = (props) => {
   const qtyRefs = useRef([]);
   const purchasePriceRefs = useRef([]);
 
-  const mutateCoinInPortfolioDB = useMutation({
+  // Get portfolio data
+  const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
+  const data = queryClient.getQueryData(qKey);
+
+  const editCoinInPortfolioDB = useMutation({
     mutationFn: async (id) => {
-      console.log(
-        JSON.stringify({
-          id: id,
-          fields: {
-            quantity: parseFloat(qtyRefs.current[id]),
-            purchase_price: parseFloat(purchasePriceRefs.current[id]),
-          },
-        })
-      );
       const res = await fetch(
         import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB/" + id,
         {
@@ -77,11 +72,32 @@ const PortfolioModal = (props) => {
     },
   });
 
-  // Get portfolio data
-  const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
-  const data = queryClient.getQueryData(qKey);
+  const deleteCoinInPortfolioDB = useMutation({
+    mutationFn: async (id) => {
+      const res = await fetch(
+        import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB/" + id,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_TOKEN,
+          },
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Request error - coin not updated");
+      }
+      return await res.json();
+    },
+    retry: 0,
+    onError: (error) => {
+      console.log("Request error - ", error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
+    },
+  });
 
-  // Correct code but not re-rendering
   const handleEdit = (id) => {
     console.log(JSON.stringify(onEdit));
     const newState = { ...onEdit };
@@ -89,19 +105,27 @@ const PortfolioModal = (props) => {
     setOnEdit(newState);
   };
 
-  // ISSUE: 422 error cannot find fields
-  const handleSubmit = (id) => {
-    // Write to database with qtyRef, purchasePriceRef (id as identifier?)
-    mutateCoinInPortfolioDB.mutate(id);
+  const handleSubmit = (id, qty, price) => {
+    if (!qtyRefs.current[id]) {
+      qtyRefs.current[id] = qty;
+    }
+    if (!purchasePriceRefs.current[id]) {
+      purchasePriceRefs.current[id] = price;
+    }
+    editCoinInPortfolioDB.mutate(id);
     const newState = { ...onEdit };
     newState[id] = false;
     setOnEdit(newState);
   };
 
-  useEffect(() => {
+  const resetEditCoinState = () => {
     const newState = {};
     data?.records.forEach((datum) => (newState[datum.id] = false));
     setOnEdit(newState);
+  };
+
+  useEffect(() => {
+    resetEditCoinState();
   }, []);
 
   return (
@@ -153,9 +177,10 @@ const PortfolioModal = (props) => {
                           {datum.fields.name}
                         </TableCell>
                         <TableCell>{datum.fields.symbol}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right min-w-[100px] justify-end">
                           {onEdit[datum.id] ? (
                             <Input
+                              className="min-w-[100px]"
                               defaultValue={datum.fields.quantity}
                               onChange={(event) =>
                                 (qtyRefs.current[datum.id] = event.target.value)
@@ -165,9 +190,10 @@ const PortfolioModal = (props) => {
                             datum.fields.quantity
                           )}
                         </TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="text-right min-w-[100px] justify-end">
                           {onEdit[datum.id] ? (
                             <Input
+                              className="min-w-[100px] pr-0"
                               defaultValue={datum.fields.purchase_price}
                               onChange={(event) =>
                                 (purchasePriceRefs.current[datum.id] =
@@ -181,15 +207,21 @@ const PortfolioModal = (props) => {
                         <TableCell>
                           {onEdit[datum.id] ? (
                             <Button
-                              className="rounded"
-                              onClick={() => handleSubmit(datum.id)}
+                              className="rounded max-w-[70px]"
+                              onClick={() =>
+                                handleSubmit(
+                                  datum.id,
+                                  datum.fields.quantity,
+                                  datum.fields.purchase_price
+                                )
+                              }
                             >
                               Submit
                             </Button>
                           ) : (
                             <Button
                               variant="outline"
-                              className="rounded"
+                              className="rounded max-w-[70px]"
                               onClick={() => handleEdit(datum.id)}
                             >
                               Edit
@@ -197,7 +229,13 @@ const PortfolioModal = (props) => {
                           )}
                         </TableCell>
                         <TableCell>
-                          <Button variant="outline" className="rounded">
+                          <Button
+                            variant="destructive"
+                            className="rounded max-w-[70px]"
+                            onClick={() =>
+                              deleteCoinInPortfolioDB.mutate(datum.id)
+                            }
+                          >
                             Delete
                           </Button>
                         </TableCell>

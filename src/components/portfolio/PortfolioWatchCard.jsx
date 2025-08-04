@@ -48,7 +48,7 @@ const PortfolioWatchCard = (props) => {
         />
       </div>
       <div className="border rounded-lg overflow-hidden">
-        <Table>
+        <Table className="min-w-fit">
           <TableHeader>
             <TableRow>
               {props.headerRows.map((row, idx) => (
@@ -68,7 +68,8 @@ const PortfolioWatchCard = (props) => {
                   <TableCell className="text-right">
                     {currencyFormatter(
                       props.currentPrice.filter(
-                        (coin) => coin.symbol === record.fields.symbol
+                        (coin) =>
+                          coin.symbol.toUpperCase() === record.fields.symbol
                       )[0]["current_price"]
                     )}
                   </TableCell>
@@ -77,7 +78,8 @@ const PortfolioWatchCard = (props) => {
                       portfolioValCalculator(
                         record.fields.quantity,
                         props.currentPrice.filter(
-                          (coin) => coin.symbol === record.fields.symbol
+                          (coin) =>
+                            coin.symbol.toUpperCase() === record.fields.symbol
                         )[0]["current_price"]
                       )
                     )}
@@ -87,7 +89,8 @@ const PortfolioWatchCard = (props) => {
                       portfolioValCalculator(
                         record.fields.quantity,
                         props.currentPrice.filter(
-                          (coin) => coin.symbol === record.fields.symbol
+                          (coin) =>
+                            coin.symbol.toUpperCase() === record.fields.symbol
                         )[0]["current_price"]
                       ),
                       record.fields.purchase_price
@@ -101,7 +104,9 @@ const PortfolioWatchCard = (props) => {
                             portfolioValCalculator(
                               record.fields.quantity,
                               props.currentPrice.filter(
-                                (coin) => coin.symbol === record.fields.symbol
+                                (coin) =>
+                                  coin.symbol.toUpperCase() ===
+                                  record.fields.symbol
                               )[0]["current_price"]
                             ),
                             record.fields.purchase_price
@@ -118,7 +123,9 @@ const PortfolioWatchCard = (props) => {
                             portfolioValCalculator(
                               record.fields.quantity,
                               props.currentPrice.filter(
-                                (coin) => coin.symbol === record.fields.symbol
+                                (coin) =>
+                                  coin.symbol.toUpperCase() ===
+                                  record.fields.symbol
                               )[0]["current_price"]
                             ),
                             record.fields.purchase_price

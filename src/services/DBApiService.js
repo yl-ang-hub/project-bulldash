@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  queryOptions,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { queryOptions } from "@tanstack/react-query";
 import { fullCoinList } from "../data/fullCoinListing";
 
 // FETCH FUNCTIONS
