@@ -14,8 +14,8 @@ import { bitcoin60dChartSGD } from "./data/bitcoin60dChart";
 import { getDate } from "./services/DatetimeService";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import Portfolio from "./components/portfolio/Portfolio";
-import Watchlist from "./components/Watchlist";
-import Market from "./components/Market";
+import Watchlist from "./components/watchlist/Watchlist";
+import Market from "./components/market/Market";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="container mx-auto w-[500px] text-center">
-        <h1>Growfolio</h1>
+        <h1>BullDash</h1>
         <div className="container mx-auto">
           <Tabs defaultValue="portfolio" className="row mx-auto">
             <TabsList>
