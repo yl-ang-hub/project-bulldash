@@ -19,13 +19,93 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "../ui/input";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import { updateCoinPortfolioDB } from "@/services/DBApiService";
 
 const PortfolioModal = (props) => {
+  const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
+  const [onEdit, setOnEdit] = useState({});
+  const qtyRefs = useRef([]);
+  const purchasePriceRefs = useRef([]);
+
+  const mutateCoinInPortfolioDB = useMutation({
+    mutationFn: async (id) => {
+      console.log(
+        JSON.stringify({
+          id: id,
+          fields: {
+            quantity: parseFloat(qtyRefs.current[id]),
+            purchase_price: parseFloat(purchasePriceRefs.current[id]),
+          },
+        })
+      );
+      const res = await fetch(
+        import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB/" + id,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_TOKEN,
+          },
+          body: JSON.stringify({
+            fields: {
+              quantity: parseFloat(qtyRefs.current[id]),
+              purchase_price: parseFloat(purchasePriceRefs.current[id]),
+            },
+          }),
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Request error - coin not updated");
+      }
+      return await res.json();
+    },
+    retry: 0,
+    onError: (error) => {
+      console.log("error has occurred", error.message);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
+    },
+    onSettled: () => {
+      const newState = { ...onEdit };
+      newState[id] = false;
+      setOnEdit(newState);
+    },
+  });
+
+  // Get portfolio data
+  const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
+  const data = queryClient.getQueryData(qKey);
+
+  // Correct code but not re-rendering
+  const handleEdit = (id) => {
+    console.log(JSON.stringify(onEdit));
+    const newState = { ...onEdit };
+    newState[id] = true;
+    setOnEdit(newState);
+  };
+
+  // ISSUE: 422 error cannot find fields
+  const handleSubmit = (id) => {
+    // Write to database with qtyRef, purchasePriceRef (id as identifier?)
+    mutateCoinInPortfolioDB.mutate(id);
+    const newState = { ...onEdit };
+    newState[id] = false;
+    setOnEdit(newState);
+  };
+
+  useEffect(() => {
+    const newState = {};
+    data?.records.forEach((datum) => (newState[datum.id] = false));
+    setOnEdit(newState);
+  }, []);
 
   return (
-    <Dialog className="w-full mx-auto py-8 px-4 md:px-6">
+    <Dialog className="w-[800px] mx-auto py-8 px-4 md:px-6">
       <form>
         <DialogTrigger asChild>
           <Button variant="default" className="rounded">
@@ -50,115 +130,98 @@ const PortfolioModal = (props) => {
             />
           </div>
           <div className="border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>{props.headerRows[0]}</TableHead>
-                  <TableHead>{props.headerRows[1]}</TableHead>
-                  <TableHead>{props.headerRows[2]}</TableHead>
-
-                  <TableHead className="text-right">
-                    Total Purchase Price
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell className="font-medium">AAPL</TableCell>
-                  <TableCell>Apple Inc.</TableCell>
-                  <TableCell className="text-right">$150.00</TableCell>
-                  <TableCell className="text-right">
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      +2.5%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">MSFT</TableCell>
-                  <TableCell>Microsoft Corporation</TableCell>
-                  <TableCell className="text-right">$300.00</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="outline" className="bg-red-500 text-red-50">
-                      -1.2%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">AMZN</TableCell>
-                  <TableCell>Amazon.com, Inc.</TableCell>
-                  <TableCell className="text-right">$3,500.00</TableCell>
-                  <TableCell className="text-right">
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      +0.8%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">GOOG</TableCell>
-                  <TableCell>Alphabet Inc.</TableCell>
-                  <TableCell className="text-right">$2,800.00</TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant="outline" className="bg-red-500 text-red-50">
-                      -0.5%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell className="font-medium">TSLA</TableCell>
-                  <TableCell>Tesla, Inc.</TableCell>
-                  <TableCell className="text-right">$800.00</TableCell>
-                  <TableCell className="text-right">
-                    <Badge
-                      variant="outline"
-                      className="bg-green-500 text-green-50"
-                    >
-                      +3.2%
-                    </Badge>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+            <ScrollArea
+              className="h-[400px] rounded-md border"
+              orientation="both"
+            >
+              <Table>
+                <TableHeader className="sticky top-0 bg-background z-10">
+                  <TableRow>
+                    <TableHead>{props.headerRows[0]}</TableHead>
+                    <TableHead>{props.headerRows[1]}</TableHead>
+                    <TableHead>{props.headerRows[2]}</TableHead>
+                    <TableHead>Total Purchase Price</TableHead>
+                    <TableHead></TableHead>
+                    <TableHead></TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data?.records.map((datum) => {
+                    return (
+                      <TableRow key={datum.id}>
+                        <TableCell className="font-medium">
+                          {datum.fields.name}
+                        </TableCell>
+                        <TableCell>{datum.fields.symbol}</TableCell>
+                        <TableCell className="text-right">
+                          {onEdit[datum.id] ? (
+                            <Input
+                              defaultValue={datum.fields.quantity}
+                              onChange={(event) =>
+                                (qtyRefs.current[datum.id] = event.target.value)
+                              }
+                            ></Input>
+                          ) : (
+                            datum.fields.quantity
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {onEdit[datum.id] ? (
+                            <Input
+                              defaultValue={datum.fields.purchase_price}
+                              onChange={(event) =>
+                                (purchasePriceRefs.current[datum.id] =
+                                  event.target.value)
+                              }
+                            ></Input>
+                          ) : (
+                            datum.fields.purchase_price
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {onEdit[datum.id] ? (
+                            <Button
+                              className="rounded"
+                              onClick={() => handleSubmit(datum.id)}
+                            >
+                              Submit
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              className="rounded"
+                              onClick={() => handleEdit(datum.id)}
+                            >
+                              Edit
+                            </Button>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Button variant="outline" className="rounded">
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </ScrollArea>
           </div>
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline" className="rounded">
-                Cancel
+                Return
               </Button>
             </DialogClose>
-            <Button type="submit" className="rounded">
+            {/* <Button type="" className="rounded">
               Save changes
-            </Button>
+            </Button> */}
           </DialogFooter>
         </DialogContent>
       </form>
     </Dialog>
   );
 };
-
-function PlusIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M5 12h14" />
-      <path d="M12 5v14" />
-    </svg>
-  );
-}
 
 export default PortfolioModal;

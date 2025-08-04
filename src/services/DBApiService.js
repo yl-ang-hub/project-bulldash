@@ -1,4 +1,8 @@
-import { queryOptions } from "@tanstack/react-query";
+import {
+  QueryClient,
+  queryOptions,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { fullCoinList } from "../data/fullCoinListing";
 
 // FETCH FUNCTIONS
@@ -17,9 +21,7 @@ export const readDB = async (endpoint, args) => {
       import.meta.env.VITE_AIRTABLE_API + endpoint,
       finalArgs
     );
-    console.log(res);
     const data = await res.json();
-    console.log(data);
     return data;
   } catch (err) {
     console.log(err);
@@ -28,17 +30,14 @@ export const readDB = async (endpoint, args) => {
 
 export const createDB = async (records) => {
   try {
-    const res = await fetch(
-      import.meta.env.VITE_AIRTABLE_API + "GeckoFullCoinList",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_TOKEN,
-        },
-        body: records,
-      }
-    );
+    const res = await fetch(import.meta.env.VITE_AIRTABLE_API, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_TOKEN,
+      },
+      body: JSON.stringify(records),
+    });
     console.log(res);
     const data = await res.json();
     console.log(data);
@@ -47,12 +46,12 @@ export const createDB = async (records) => {
   }
 };
 
-/// QUERYOPTIONS
+/// QUERYOPTIONS - DATABASE
 
-export const readCoinsFromDBQueryOptions = () => {
+export const readCoinsFromPortfolioDBQueryOptions = () => {
   const endpoint = "CoinsPortfolioDB" + "?maxRecords=100&view=Grid%20view";
   return queryOptions({
-    queryKey: ["readCoinsFromDB"],
+    queryKey: ["readCoinsFromPortfolioDB"],
     queryFn: () => readDB(endpoint),
     retry: 1,
   });
