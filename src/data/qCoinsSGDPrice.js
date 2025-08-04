@@ -1,4 +1,4 @@
-const coinsSGDPrice = [
+export const coinsSGDPrice = [
   {
     id: "bitcoin",
     symbol: "btc",
