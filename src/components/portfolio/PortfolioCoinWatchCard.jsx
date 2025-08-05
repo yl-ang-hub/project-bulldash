@@ -1,0 +1,152 @@
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+
+import { Badge } from "@/components/ui/badge";
+import PortfolioModal from "./PortfolioModal";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+
+const PortfolioWatchCard = (props) => {
+  const queryClient = useQueryClient();
+
+  const currencyFormatter = (amount) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(amount);
+  };
+  const portfolioValCalculator = (quantity, currPrice) => {
+    return parseFloat(quantity) * parseFloat(currPrice);
+  };
+  const calculateGain = (portfolioVal, totalPurchasePrice) => {
+    return parseFloat(portfolioVal) / parseFloat(totalPurchasePrice) - 1;
+  };
+  const formatGain = (gain) => {
+    const formattedPercentage = new Intl.NumberFormat("en-US", {
+      style: "percent",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(gain);
+    if (gain > 0) {
+      return "+" + formattedPercentage;
+    } else {
+      return formattedPercentage;
+    }
+  };
+
+  return (
+    <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-1xl font-bold">{props.children}</h2>
+        <PortfolioModal
+          dataType={props.dataType}
+          headerRows={props.headerRows}
+        />
+      </div>
+      <div className="border rounded-lg overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              {props.headerRows.map((row, idx) => (
+                <TableHead key={idx}>{row}</TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {props.portfolioData?.records.map((record, idx) => {
+              return (
+                <TableRow key={idx}>
+                  <TableCell className="font-medium">
+                    {record.fields.name}
+                  </TableCell>
+                  <TableCell>{record.fields.symbol}</TableCell>
+                  <TableCell>{record.fields.quantity}</TableCell>
+                  <TableCell className="text-right">
+                    {currencyFormatter(
+                      props.currentPrice.filter(
+                        (asset) =>
+                          asset.symbol.toUpperCase() === record.fields.symbol
+                      )[0]["current_price"]
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {currencyFormatter(
+                      portfolioValCalculator(
+                        record.fields.quantity,
+                        props.currentPrice.filter(
+                          (asset) =>
+                            asset.symbol.toUpperCase() === record.fields.symbol
+                        )[0]["current_price"]
+                      )
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {calculateGain(
+                      portfolioValCalculator(
+                        record.fields.quantity,
+                        props.currentPrice.filter(
+                          (asset) =>
+                            asset.symbol.toUpperCase() === record.fields.symbol
+                        )[0]["current_price"]
+                      ),
+                      record.fields.purchase_price
+                    ) > 0 ? (
+                      <Badge
+                        variant="outline"
+                        className="bg-green-500 text-green-50"
+                      >
+                        {formatGain(
+                          calculateGain(
+                            portfolioValCalculator(
+                              record.fields.quantity,
+                              props.currentPrice.filter(
+                                (asset) =>
+                                  asset.symbol.toUpperCase() ===
+                                  record.fields.symbol
+                              )[0]["current_price"]
+                            ),
+                            record.fields.purchase_price
+                          )
+                        )}
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="bg-red-500 text-red-50"
+                      >
+                        {formatGain(
+                          calculateGain(
+                            portfolioValCalculator(
+                              record.fields.quantity,
+                              props.currentPrice.filter(
+                                (asset) =>
+                                  asset.symbol.toUpperCase() ===
+                                  record.fields.symbol
+                              )[0]["current_price"]
+                            ),
+                            record.fields.purchase_price
+                          )
+                        )}
+                      </Badge>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <p>
+          {props.dataType === "stocks" && JSON.stringify(props.currentPrice)}
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default PortfolioWatchCard;

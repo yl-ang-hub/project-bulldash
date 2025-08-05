@@ -3,7 +3,7 @@ import {
   useQueryClient,
   useQuery,
 } from "@tanstack/react-query";
-import PortfolioWatchCard from "./PortfolioWatchCard";
+import PortfolioWatchCard from "./PortfolioCoinWatchCard";
 import { readCoinsFromPortfolioDBQueryOptions } from "@/services/DBApiService";
 import { Suspense } from "react";
 import { coinsSGDPrice } from "@/data/qCoinsSGDPrice";
@@ -19,7 +19,7 @@ const PortfolioCoin = () => {
     "Gain",
   ];
 
-  const { data, isSuccess } = useSuspenseQuery(
+  const qCoinsFromPortfolioDB = useSuspenseQuery(
     readCoinsFromPortfolioDBQueryOptions()
   );
   // TODO: Link to live coin pricing @ CoinGecko
@@ -29,11 +29,11 @@ const PortfolioCoin = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <div className="w-1/2">
         <div>
-          {isSuccess && (
+          {qCoinsFromPortfolioDB.isSuccess && (
             <PortfolioWatchCard
               dataType="coin"
               headerRows={headerRows}
-              portfolioData={data}
+              portfolioData={qCoinsFromPortfolioDB.data}
               currentPrice={priceData}
             >
               Coins

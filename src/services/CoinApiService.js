@@ -22,15 +22,15 @@ const fetchData = async (endpoint, args) => {
   return data;
 };
 
-export const fullCoinListingQueryOptions = () => {
-  const endpoint = "coins/list?include_platform=true";
-  return queryOptions({
-    queryKey: ["fullCoinList"],
-    queryFn: () => fetchData(endpoint),
-    staleTime: Infinity,
-    gcTime: Infinity,
-  });
-};
+// export const fullCoinListingQueryOptions = () => {
+//   const endpoint = "coins/list?include_platform=true";
+//   return queryOptions({
+//     queryKey: ["fullCoinList"],
+//     queryFn: () => fetchData(endpoint),
+//     staleTime: Infinity,
+//     gcTime: Infinity,
+//   });
+// };
 
 export const qCoinUSDChartQueryOptions = (coinId, days) => {
   const endpoint =
