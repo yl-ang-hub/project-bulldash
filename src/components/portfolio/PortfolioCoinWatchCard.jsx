@@ -15,6 +15,17 @@ import { useEffect } from "react";
 const PortfolioWatchCard = (props) => {
   const queryClient = useQueryClient();
 
+  const getCurrentPrice = (symbol) => {
+    const result = props.currentPrice.filter(
+      (row) => row.symbol.toUpperCase() === symbol.toUpperCase()
+    );
+    if (result.length === 0) {
+      return 0;
+    } else {
+      return result[0]["current_price"];
+    }
+  };
+
   const currencyFormatter = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -39,6 +50,9 @@ const PortfolioWatchCard = (props) => {
       return formattedPercentage;
     }
   };
+
+  console.log(props.portfolioData);
+  console.log(props.currentPrice);
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
@@ -65,24 +79,16 @@ const PortfolioWatchCard = (props) => {
                   <TableCell className="font-medium">
                     {record.fields.name}
                   </TableCell>
-                  <TableCell>{record.fields.symbol}</TableCell>
+                  <TableCell>{record.fields.symbol.toUpperCase()}</TableCell>
                   <TableCell>{record.fields.quantity}</TableCell>
                   <TableCell className="text-right">
-                    {currencyFormatter(
-                      props.currentPrice.filter(
-                        (asset) =>
-                          asset.symbol.toUpperCase() === record.fields.symbol
-                      )[0]["current_price"]
-                    )}
+                    {currencyFormatter(getCurrentPrice(record.fields.symbol))}
                   </TableCell>
                   <TableCell className="text-right">
                     {currencyFormatter(
                       portfolioValCalculator(
                         record.fields.quantity,
-                        props.currentPrice.filter(
-                          (asset) =>
-                            asset.symbol.toUpperCase() === record.fields.symbol
-                        )[0]["current_price"]
+                        getCurrentPrice(record.fields.symbol)
                       )
                     )}
                   </TableCell>
@@ -90,10 +96,7 @@ const PortfolioWatchCard = (props) => {
                     {calculateGain(
                       portfolioValCalculator(
                         record.fields.quantity,
-                        props.currentPrice.filter(
-                          (asset) =>
-                            asset.symbol.toUpperCase() === record.fields.symbol
-                        )[0]["current_price"]
+                        getCurrentPrice(record.fields.symbol)
                       ),
                       record.fields.purchase_price
                     ) > 0 ? (
@@ -105,11 +108,7 @@ const PortfolioWatchCard = (props) => {
                           calculateGain(
                             portfolioValCalculator(
                               record.fields.quantity,
-                              props.currentPrice.filter(
-                                (asset) =>
-                                  asset.symbol.toUpperCase() ===
-                                  record.fields.symbol
-                              )[0]["current_price"]
+                              getCurrentPrice(record.fields.symbol)
                             ),
                             record.fields.purchase_price
                           )
@@ -124,11 +123,7 @@ const PortfolioWatchCard = (props) => {
                           calculateGain(
                             portfolioValCalculator(
                               record.fields.quantity,
-                              props.currentPrice.filter(
-                                (asset) =>
-                                  asset.symbol.toUpperCase() ===
-                                  record.fields.symbol
-                              )[0]["current_price"]
+                              getCurrentPrice(record.fields.symbol)
                             ),
                             record.fields.purchase_price
                           )

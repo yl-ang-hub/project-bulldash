@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Table,
   TableHeader,
@@ -19,9 +20,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "../ui/input";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { PortfolioCoinComboBox } from "./PortfolioCoinComboBox";
+// const PortfolioCoinComboBox = React.lazy(
+//   () => import("./PortfolioCoinComboBox")
+// );
 // import { updateCoinPortfolioDB } from "@/services/DBApiService";
 
 const PortfolioCoinModal = (props) => {
@@ -29,8 +34,13 @@ const PortfolioCoinModal = (props) => {
   // TODO: IMPLEMENT SEARCH
   const [searchTerm, setSearchTerm] = useState("");
   const [onEdit, setOnEdit] = useState({});
+  const [symbolOnAdd, setSymbolOnAdd] = useState("");
+  const [nameOnAdd, setNameOnAdd] = useState("");
+  const [idTickerOnAdd, setIdTickerOnAdd] = useState("");
   const qtyRefs = useRef([]);
   const purchasePriceRefs = useRef([]);
+  const newQty = useRef(0);
+  const newPurchasePrice = useRef(0);
 
   // Get portfolio data
   const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
@@ -99,6 +109,46 @@ const PortfolioCoinModal = (props) => {
     },
   });
 
+  const addCoinInPortfolioDB = useMutation({
+    mutationFn: async ({ id, symbol, name, qty, price }) => {
+      const res = await fetch(
+        import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_TOKEN,
+          },
+          body: JSON.stringify({
+            fields: {
+              idTicker: id,
+              symbol: symbol,
+              name: name,
+              quantity: qty,
+              purchase_price: price,
+            },
+          }),
+        }
+      );
+      if (!res.ok) {
+        throw new Error("Request error - coin not updated");
+      }
+      return await res.json();
+    },
+    retry: 0,
+    onError: (error) => {
+      console.log("error has occurred", error.message);
+    },
+    onSuccess: () => {
+      setIdTickerOnAdd("");
+      setNameOnAdd("");
+      setSymbolOnAdd("");
+      newQty.current = 0;
+      newPurchasePrice.current = 0;
+      queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
+    },
+  });
+
   const handleEdit = (id) => {
     console.log(JSON.stringify(onEdit));
     const newState = { ...onEdit };
@@ -125,141 +175,202 @@ const PortfolioCoinModal = (props) => {
     setOnEdit(newState);
   };
 
+  const showCoinSymbolOnAdd = (id, name, symbol) => {
+    setIdTickerOnAdd(id);
+    setNameOnAdd(name);
+    setSymbolOnAdd(symbol.toUpperCase());
+  };
+
   useEffect(() => {
     resetEditCoinState();
   }, []);
 
   return (
-    <Dialog className="w-[800px] mx-auto py-8 px-4 md:px-6">
-      <form>
-        <DialogTrigger asChild>
-          <Button variant="default" className="rounded">
-            Add / Edit
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="w-full">
-          <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your portfolio and click save when you&apos;re
-              done.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mb-1 md:mb-2">
-            <Input
-              type="search"
-              placeholder="Search stocks..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full max-w-md"
-            />
-          </div>
-          <div className="border rounded-lg overflow-hidden">
-            <ScrollArea
-              className="h-[400px] rounded-md border"
-              orientation="both"
-            >
-              <Table>
-                <TableHeader className="sticky top-0 bg-background z-10">
-                  <TableRow>
-                    <TableHead>{props.headerRows[0]}</TableHead>
-                    <TableHead>{props.headerRows[1]}</TableHead>
-                    <TableHead>{props.headerRows[2]}</TableHead>
-                    <TableHead>Total Purchase Price</TableHead>
-                    <TableHead></TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data?.records.map((datum) => {
-                    return (
-                      <TableRow key={datum.id}>
-                        <TableCell className="font-medium">
-                          {datum.fields.name}
-                        </TableCell>
-                        <TableCell>{datum.fields.symbol}</TableCell>
-                        <TableCell className="text-right min-w-[100px] justify-end">
-                          {onEdit[datum.id] ? (
-                            <Input
-                              className="min-w-[100px]"
-                              defaultValue={datum.fields.quantity}
-                              onChange={(event) =>
-                                (qtyRefs.current[datum.id] = event.target.value)
-                              }
-                            ></Input>
-                          ) : (
-                            datum.fields.quantity
-                          )}
-                        </TableCell>
-                        <TableCell className="text-right min-w-[100px] justify-end">
-                          {onEdit[datum.id] ? (
-                            <Input
-                              className="min-w-[100px] pr-0"
-                              defaultValue={datum.fields.purchase_price}
-                              onChange={(event) =>
-                                (purchasePriceRefs.current[datum.id] =
-                                  event.target.value)
-                              }
-                            ></Input>
-                          ) : (
-                            datum.fields.purchase_price
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {onEdit[datum.id] ? (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Dialog className="w-[800px] mx-auto py-8 px-4 md:px-6">
+        <form>
+          <DialogTrigger asChild>
+            <Button variant="default" className="rounded">
+              Add / Edit
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="w-full">
+            <DialogHeader>
+              <DialogTitle>Edit Portfolio</DialogTitle>
+              <DialogDescription>
+                Make changes to your portfolio here.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mb-1 md:mb-2">
+              <Input
+                type="search"
+                placeholder="Search stocks..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full max-w-md"
+              />
+            </div>
+            <div className="border rounded-lg overflow-hidden">
+              <ScrollArea className="rounded-md border" orientation="both">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-background z-10">
+                    <TableRow>
+                      <TableHead>{props.headerRows[0]}</TableHead>
+                      <TableHead>{props.headerRows[1]}</TableHead>
+                      <TableHead>{props.headerRows[2]}</TableHead>
+                      <TableHead>Total Purchase Price</TableHead>
+                      <TableHead></TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {data?.records.map((datum) => {
+                      return (
+                        <TableRow key={datum.id}>
+                          <TableCell className="font-medium">
+                            {datum.fields.name}
+                          </TableCell>
+                          <TableCell>{datum.fields.symbol}</TableCell>
+                          <TableCell className="text-right min-w-[100px] justify-end">
+                            {onEdit[datum.id] ? (
+                              <Input
+                                className="min-w-[100px] text-right"
+                                defaultValue={datum.fields.quantity}
+                                onChange={(event) =>
+                                  (qtyRefs.current[datum.id] =
+                                    event.target.value)
+                                }
+                              />
+                            ) : (
+                              datum.fields.quantity
+                            )}
+                          </TableCell>
+                          <TableCell className="text-right min-w-[100px] justify-end">
+                            {onEdit[datum.id] ? (
+                              <Input
+                                className="min-w-[100px] pr-0 text-right"
+                                defaultValue={datum.fields.purchase_price}
+                                onChange={(event) =>
+                                  (purchasePriceRefs.current[datum.id] =
+                                    event.target.value)
+                                }
+                              />
+                            ) : (
+                              datum.fields.purchase_price
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {onEdit[datum.id] ? (
+                              <Button
+                                className="rounded max-w-[70px]"
+                                onClick={() =>
+                                  handleSubmit(
+                                    datum.id,
+                                    datum.fields.quantity,
+                                    datum.fields.purchase_price
+                                  )
+                                }
+                              >
+                                Submit
+                              </Button>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                className="rounded max-w-[70px]"
+                                onClick={() => handleEdit(datum.id)}
+                              >
+                                Edit
+                              </Button>
+                            )}
+                          </TableCell>
+                          <TableCell>
                             <Button
+                              variant="destructive"
                               className="rounded max-w-[70px]"
                               onClick={() =>
-                                handleSubmit(
-                                  datum.id,
-                                  datum.fields.quantity,
-                                  datum.fields.purchase_price
-                                )
+                                deleteCoinInPortfolioDB.mutate(datum.id)
                               }
                             >
-                              Submit
+                              Delete
                             </Button>
-                          ) : (
-                            <Button
-                              variant="outline"
-                              className="rounded max-w-[70px]"
-                              onClick={() => handleEdit(datum.id)}
-                            >
-                              Edit
-                            </Button>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <Button
-                            variant="destructive"
-                            className="rounded max-w-[70px]"
-                            onClick={() =>
-                              deleteCoinInPortfolioDB.mutate(datum.id)
-                            }
-                          >
-                            Delete
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </ScrollArea>
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline" className="rounded">
-                Return
-              </Button>
-            </DialogClose>
-            {/* <Button type="" className="rounded">
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                    <TableRow>
+                      <TableCell>
+                        {/* TODO: Optimise and Solve long loading time */}
+                        <PortfolioCoinComboBox
+                          className="max-w-[100px]"
+                          showSymbolFn={showCoinSymbolOnAdd}
+                        />
+                      </TableCell>
+                      <TableCell>{symbolOnAdd}</TableCell>
+                      <TableCell className="text-right min-w-[100px] justify-end">
+                        {/* TODO: Validate that it is Float */}
+                        <Input
+                          className="min-w-[100px] pr-0 text-right"
+                          defaultValue={newQty.current}
+                          onChange={(event) =>
+                            (newQty.current = parseFloat(event.target.value))
+                          }
+                        />
+                      </TableCell>
+                      <TableCell className="text-right min-w-[100px] justify-end">
+                        {/* TODO: Validate that it is Float */}
+                        <Input
+                          className="min-w-[100px] pr-0 text-right"
+                          defaultValue={newPurchasePrice.current}
+                          onChange={(event) =>
+                            (newPurchasePrice.current = parseFloat(
+                              event.target.value
+                            ))
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          className="rounded max-w-[70px]"
+                          onClick={() => {
+                            console.log(
+                              idTickerOnAdd,
+                              nameOnAdd,
+                              symbolOnAdd,
+                              newQty.current,
+                              newPurchasePrice.current
+                            );
+                            addCoinInPortfolioDB.mutate({
+                              id: idTickerOnAdd,
+                              name: nameOnAdd,
+                              symbol: symbolOnAdd,
+                              qty: newQty.current,
+                              price: newPurchasePrice.current,
+                            });
+                          }}
+                        >
+                          Add
+                        </Button>
+                      </TableCell>
+                      <TableCell></TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </div>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline" className="rounded">
+                  Return
+                </Button>
+              </DialogClose>
+              {/* <Button type="" className="rounded">
               Save changes
             </Button> */}
-          </DialogFooter>
-        </DialogContent>
-      </form>
-    </Dialog>
+            </DialogFooter>
+          </DialogContent>
+        </form>
+      </Dialog>
+    </Suspense>
   );
 };
 

@@ -44,7 +44,7 @@ export const createDB = async (records) => {
 
 /// QUERYOPTIONS - DATABASE
 
-export const readCoinsFromPortfolioDBQueryOptions = () => {
+const readCoinsFromPortfolioDBQueryOptions = () => {
   const endpoint = "CoinsPortfolioDB" + "?maxRecords=100&view=Grid%20view";
   return queryOptions({
     queryKey: ["readCoinsFromPortfolioDB"],

@@ -62,6 +62,7 @@ export const qCoinsUSDPriceQueryOptions = (coinSymbols) => {
   return queryOptions({
     queryKey: ["qCoinsUSDPrice"],
     queryFn: () => fetchData(endpoint),
+    retry: 0,
     staleTime: Infinity,
     gcTime: Infinity,
   });
