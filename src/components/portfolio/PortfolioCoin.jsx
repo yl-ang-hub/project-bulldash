@@ -5,8 +5,6 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { Suspense } from "react";
-import { coinsSGDPrice } from "@/data/qCoinsSGDPrice";
-import { qCoinsUSDPriceQueryOptions } from "@/services/CoinApiService";
 const PortfolioCoinWatchCard = React.lazy(
   () => import("./PortfolioCoinWatchCard")
 );
@@ -39,10 +37,12 @@ const PortfolioCoin = () => {
           }
         );
         const data = await res.json();
-        console.log(JSON.stringify(data));
-        const symbolsList = data.records.map((coin) => coin.fields.symbol);
-        console.log(symbolsList.join("%2C"));
-        setPortfolioSymbols(symbolsList.join("%2C"));
+        // console.log(JSON.stringify(data));
+        setPortfolioSymbols((prevState) => {
+          const symbols = data.records.map((coin) => coin.fields.symbol);
+          return symbols.join("%2C");
+        });
+        console.log(portfolioSymbols);
         return data;
       } catch (err) {
         console.log(err);
@@ -51,9 +51,37 @@ const PortfolioCoin = () => {
     retry: 0,
   });
 
-  const qCoinQuotes = useSuspenseQuery(
-    qCoinsUSDPriceQueryOptions(portfolioSymbols)
-  );
+  const qCoinQuotes = useSuspenseQuery({
+    queryKey: ["qCoinsUSDPrice"],
+    queryFn: async () => {
+      const symbols = qCoinsFromPortfolioDB.data.records.map(
+        (coin) => coin.fields.symbol
+      );
+      const endpoint =
+        "coins/markets?vs_currency=usd&symbols=" +
+        symbols.join("%2C") +
+        "&include_tokens=top&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h&locale=en&precision=full";
+      const res = await fetch(import.meta.env.VITE_COINGECKO + endpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-cg-demo-api-key": import.meta.env.VITE_COINGECKO_APIKEY,
+        },
+      });
+      if (!res.ok) {
+        throw new Error("Request error");
+      }
+      const data = await res.json();
+      console.log(JSON.stringify(data));
+      return data;
+    },
+    retry: 0,
+    staleTime: Infinity,
+    enabled: !!qCoinsFromPortfolioDB.data,
+  });
+
+  console.log(portfolioSymbols);
+  console.log(qCoinQuotes.data);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
@@ -64,7 +92,6 @@ const PortfolioCoin = () => {
               dataType="coin"
               headerRows={headerRows}
               portfolioData={qCoinsFromPortfolioDB.data}
-              // currentPrice={priceData}
               currentPrice={qCoinQuotes.data}
             >
               Coins

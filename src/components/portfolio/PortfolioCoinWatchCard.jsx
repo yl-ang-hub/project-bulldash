@@ -51,8 +51,8 @@ const PortfolioWatchCard = (props) => {
     }
   };
 
-  console.log(props.portfolioData);
-  console.log(props.currentPrice);
+  // console.log(props.portfolioData);
+  // console.log(props.currentPrice);
 
   return (
     <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">

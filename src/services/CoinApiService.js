@@ -12,6 +12,7 @@ const fetchData = async (endpoint, args) => {
     },
   };
   const finalArgs = args || defaultArgs;
+  console.log(endpoint, finalArgs);
   const res = await fetch(import.meta.env.VITE_COINGECKO + endpoint, finalArgs);
   console.log(JSON.stringify(res));
   if (!res.ok) {
@@ -54,11 +55,12 @@ export const qCoinTrendingQueryOptions = () => {
   });
 };
 
-export const qCoinsUSDPriceQueryOptions = (coinSymbols) => {
+const qCoinsUSDPriceQueryOptions = (coinSymbols) => {
   const endpoint =
     "coins/markets?vs_currency=usd&symbols=" +
     coinSymbols +
     "&include_tokens=top&order=market_cap_desc&per_page=250&sparkline=true&price_change_percentage=1h&locale=en&precision=full";
+  console.log(endpoint);
   return queryOptions({
     queryKey: ["qCoinsUSDPrice"],
     queryFn: () => fetchData(endpoint),

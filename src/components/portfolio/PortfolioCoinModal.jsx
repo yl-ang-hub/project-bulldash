@@ -41,6 +41,7 @@ const PortfolioCoinModal = (props) => {
   const purchasePriceRefs = useRef([]);
   const newQty = useRef(0);
   const newPurchasePrice = useRef(0);
+  const [dropdownValue, setDropdownValue] = useState("");
 
   // Get portfolio data
   const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
@@ -73,8 +74,9 @@ const PortfolioCoinModal = (props) => {
     onError: (error) => {
       console.log("error has occurred", error.message);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
+    onSuccess: async () => {
+      await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
+      await queryClient.invalidateQueries(["qCoinsUSDPrice"]);
     },
     onSettled: () => {
       const newState = { ...onEdit };
@@ -109,6 +111,7 @@ const PortfolioCoinModal = (props) => {
     },
   });
 
+  // ISSUE: Does not re-render WatchCard & ComboBox components
   const addCoinInPortfolioDB = useMutation({
     mutationFn: async ({ id, symbol, name, qty, price }) => {
       const res = await fetch(
@@ -139,13 +142,17 @@ const PortfolioCoinModal = (props) => {
     onError: (error) => {
       console.log("error has occurred", error.message);
     },
-    onSuccess: () => {
+    onSuccess: async () => {
+      console.log("add coin is successful, callback running");
+      await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
+      await queryClient.invalidateQueries(["qCoinsUSDPrice"]);
+      // ISSUE: No re-render of component + child despite state change or query invalidation
+      // ComboBox & useRefs not cleared & price/quantity not updated in WatchCard
       setIdTickerOnAdd("");
       setNameOnAdd("");
       setSymbolOnAdd("");
       newQty.current = 0;
       newPurchasePrice.current = 0;
-      queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
     },
   });
 
@@ -303,6 +310,8 @@ const PortfolioCoinModal = (props) => {
                         <PortfolioCoinComboBox
                           className="max-w-[100px]"
                           showSymbolFn={showCoinSymbolOnAdd}
+                          dropdownValue={dropdownValue}
+                          setDropdownValue={setDropdownValue}
                         />
                       </TableCell>
                       <TableCell>{symbolOnAdd}</TableCell>

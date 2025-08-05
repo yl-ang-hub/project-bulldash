@@ -1,14 +1,5 @@
 import { Suspense } from "react";
-import {
-  useQueryClient,
-  useQuery,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
-import {
-  qCoinUSDChartQueryOptions,
-  qCoinsUSDPriceQueryOptions,
-} from "./services/CoinApiService";
-import { buildRecordsFromJS, createDB } from "./services/DBApiService";
+import { useQueryClient } from "@tanstack/react-query";
 import { bitcoin60dChartSGD } from "./data/bitcoin60dChart";
 import { getDate } from "./services/DatetimeService";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";

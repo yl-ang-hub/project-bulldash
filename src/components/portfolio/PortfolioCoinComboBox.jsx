@@ -22,7 +22,7 @@ import { fullCoinList } from "@/data/fullCoinListing";
 
 export function PortfolioCoinComboBox(props) {
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState("");
+  // const [value, setValue] = useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -33,8 +33,9 @@ export function PortfolioCoinComboBox(props) {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-          {value
-            ? fullCoinList.find((coin) => coin.name === value)?.name
+          {props.dropdownValue
+            ? fullCoinList.find((coin) => coin.name === props.dropdownValue)
+                ?.name
             : "Find coin"}
           <ChevronsUpDown className="opacity-50" />
         </Button>
@@ -52,7 +53,9 @@ export function PortfolioCoinComboBox(props) {
                   onSelect={(currVal) => {
                     console.log(coin.id, coin.name, coin.symbol);
                     props.showSymbolFn(coin.id, coin.name, coin.symbol);
-                    setValue(currVal === value ? "" : currVal);
+                    props.setDropdownValue(
+                      currVal === props.dropdownValue ? "" : currVal
+                    );
                     setOpen(false);
                   }}
                 >
@@ -60,7 +63,9 @@ export function PortfolioCoinComboBox(props) {
                   <Check
                     className={cn(
                       "ml-auto",
-                      value === coin.name ? "opacity-100" : "opacity-0"
+                      props.dropdownValue === coin.name
+                        ? "opacity-100"
+                        : "opacity-0"
                     )}
                   />
                 </CommandItem>
