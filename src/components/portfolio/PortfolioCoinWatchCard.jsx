@@ -8,9 +8,8 @@ import {
 } from "@/components/ui/table";
 
 import { Badge } from "@/components/ui/badge";
-import PortfolioModal from "./PortfolioCoinModal";
+import PortfolioCoinModal from "./PortfolioCoinModal";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
 
 const PortfolioWatchCard = (props) => {
   const queryClient = useQueryClient();
@@ -58,7 +57,7 @@ const PortfolioWatchCard = (props) => {
     <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-1xl font-bold">{props.children}</h2>
-        <PortfolioModal
+        <PortfolioCoinModal
           dataType={props.dataType}
           headerRows={props.headerRows}
         />

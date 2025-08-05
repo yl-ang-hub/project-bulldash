@@ -5,8 +5,8 @@ import { readStocksFromPortfolioDBQueryOptions } from "@/services/DBApiService";
 
 const PortfolioStock = () => {
   const headerRows = [
-    "Symbol",
     "Company",
+    "Ticker",
     "Quantity",
     "Price",
     "Portfolio Value",
@@ -18,38 +18,38 @@ const PortfolioStock = () => {
   );
 
   // Sample data
-  const priceData = [
-    {
-      id: "MFST",
-      symbol: "MSFT",
-      name: "Microsoft Corporation",
-      current_price: 4479.877725186266,
-    },
-    {
-      id: "NVDA",
-      symbol: "NVDA",
-      name: "NVIDIA Corporation",
-      current_price: 4124.314,
-    },
-    {
-      id: "GOOG",
-      symbol: "GOOG",
-      name: "Alphabet Inc",
-      current_price: 2198.3982,
-    },
-    {
-      id: "AMZN",
-      symbol: "AMZN",
-      name: "Amazon.com, Inc.",
-      current_price: 3812.3902,
-    },
-    {
-      id: "AAPL",
-      symbol: "AAPL",
-      name: "Apple Inc",
-      current_price: 3812.3902,
-    },
-  ];
+  // const priceData = [
+  //   {
+  //     id: "MFST",
+  //     symbol: "MSFT",
+  //     name: "Microsoft Corporation",
+  //     current_price: 4479.877725186266,
+  //   },
+  //   {
+  //     id: "NVDA",
+  //     symbol: "NVDA",
+  //     name: "NVIDIA Corporation",
+  //     current_price: 4124.314,
+  //   },
+  //   {
+  //     id: "GOOG",
+  //     symbol: "GOOG",
+  //     name: "Alphabet Inc",
+  //     current_price: 2198.3982,
+  //   },
+  //   {
+  //     id: "AMZN",
+  //     symbol: "AMZN",
+  //     name: "Amazon.com, Inc.",
+  //     current_price: 3812.3902,
+  //   },
+  //   {
+  //     id: "AAPL",
+  //     symbol: "AAPL",
+  //     name: "Apple Inc",
+  //     current_price: 3812.3902,
+  //   },
+  // ];
 
   const fetchStockQuote = async (ticker) => {
     const res = await fetch(
@@ -74,14 +74,11 @@ const PortfolioStock = () => {
             queryFn: () => fetchStockQuote(datum.fields.symbol),
             retry: 0,
             staleTime: Infinity,
-            gcTime: Infinity,
             enabled: !!data,
           };
         })
       : [],
   });
-
-  useEffect(() => {}, []);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

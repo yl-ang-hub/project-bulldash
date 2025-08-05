@@ -18,7 +18,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "../ui/input";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -27,12 +26,10 @@ import { PortfolioCoinComboBox } from "./PortfolioCoinComboBox";
 // const PortfolioCoinComboBox = React.lazy(
 //   () => import("./PortfolioCoinComboBox")
 // );
-// import { updateCoinPortfolioDB } from "@/services/DBApiService";
 
 const PortfolioCoinModal = (props) => {
   const queryClient = useQueryClient();
   // TODO: IMPLEMENT SEARCH
-  const [searchTerm, setSearchTerm] = useState("");
   const [onEdit, setOnEdit] = useState({});
   const [symbolOnAdd, setSymbolOnAdd] = useState("");
   const [nameOnAdd, setNameOnAdd] = useState("");
@@ -208,15 +205,6 @@ const PortfolioCoinModal = (props) => {
                 Make changes to your portfolio here.
               </DialogDescription>
             </DialogHeader>
-            <div className="mb-1 md:mb-2">
-              <Input
-                type="search"
-                placeholder="Search stocks..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full max-w-md"
-              />
-            </div>
             <div className="border rounded-lg overflow-hidden">
               <ScrollArea className="rounded-md border" orientation="both">
                 <Table>

@@ -11,7 +11,6 @@ const PortfolioCoinWatchCard = React.lazy(
 
 const PortfolioCoin = () => {
   const queryClient = useQueryClient();
-  const [portfolioSymbols, setPortfolioSymbols] = useState([]);
   const headerRows = [
     "Name",
     "Symbol",
@@ -38,11 +37,6 @@ const PortfolioCoin = () => {
         );
         const data = await res.json();
         // console.log(JSON.stringify(data));
-        setPortfolioSymbols((prevState) => {
-          const symbols = data.records.map((coin) => coin.fields.symbol);
-          return symbols.join("%2C");
-        });
-        console.log(portfolioSymbols);
         return data;
       } catch (err) {
         console.log(err);
@@ -80,7 +74,6 @@ const PortfolioCoin = () => {
     enabled: !!qCoinsFromPortfolioDB.data,
   });
 
-  console.log(portfolioSymbols);
   console.log(qCoinQuotes.data);
 
   return (

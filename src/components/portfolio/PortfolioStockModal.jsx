@@ -17,20 +17,23 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "../ui/input";
 import { useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { updateCoinPortfolioDB } from "@/services/DBApiService";
 
-const PortfolioStockModal = (props) => {
+export const PortfolioStockModal = (props) => {
   const queryClient = useQueryClient();
   // TODO: IMPLEMENT SEARCH
-  const [searchTerm, setSearchTerm] = useState("");
   const [onEdit, setOnEdit] = useState({});
+  const [symbolOnAdd, setSymbolOnAdd] = useState("");
+  const [nameOnAdd, setNameOnAdd] = useState("");
+  const [idTickerOnAdd, setIdTickerOnAdd] = useState("");
   const qtyRefs = useRef([]);
   const purchasePriceRefs = useRef([]);
+  const newQty = useRef(0);
+  const newPurchasePrice = useRef(0);
+  const [dropdownValue, setDropdownValue] = useState("");
 
   // Get portfolio data
   const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
@@ -130,7 +133,7 @@ const PortfolioStockModal = (props) => {
   }, []);
 
   return (
-    <Dialog className="w-[800px] mx-auto py-8 px-4 md:px-6">
+    <Dialog className="w-[800px] mx-auto py-4 px-4 md:px-6">
       <form>
         <DialogTrigger asChild>
           <Button variant="default" className="rounded">
@@ -145,15 +148,6 @@ const PortfolioStockModal = (props) => {
               done.
             </DialogDescription>
           </DialogHeader>
-          <div className="mb-1 md:mb-2">
-            <Input
-              type="search"
-              placeholder="Search stocks..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full max-w-md"
-            />
-          </div>
           <div className="border rounded-lg overflow-hidden">
             <ScrollArea
               className="h-[400px] rounded-md border"
@@ -244,6 +238,61 @@ const PortfolioStockModal = (props) => {
                     );
                   })}
                   <TableRow>
+                    <TableCell>
+                      {/* TODO: Optimise and Solve long loading time */}
+                      <PortfolioCoinComboBox
+                        className="max-w-[100px]"
+                        showSymbolFn={showCoinSymbolOnAdd}
+                        dropdownValue={dropdownValue}
+                        setDropdownValue={setDropdownValue}
+                      />
+                    </TableCell>
+                    <TableCell>{symbolOnAdd}</TableCell>
+                    <TableCell className="text-right min-w-[100px] justify-end">
+                      {/* TODO: Validate that it is Float */}
+                      <Input
+                        className="min-w-[100px] pr-0 text-right"
+                        defaultValue={newQty.current}
+                        onChange={(event) =>
+                          (newQty.current = parseFloat(event.target.value))
+                        }
+                      />
+                    </TableCell>
+                    <TableCell className="text-right min-w-[100px] justify-end">
+                      {/* TODO: Validate that it is Float */}
+                      <Input
+                        className="min-w-[100px] pr-0 text-right"
+                        defaultValue={newPurchasePrice.current}
+                        onChange={(event) =>
+                          (newPurchasePrice.current = parseFloat(
+                            event.target.value
+                          ))
+                        }
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        className="rounded max-w-[70px]"
+                        onClick={() => {
+                          console.log(
+                            idTickerOnAdd,
+                            nameOnAdd,
+                            symbolOnAdd,
+                            newQty.current,
+                            newPurchasePrice.current
+                          );
+                          addCoinInPortfolioDB.mutate({
+                            id: idTickerOnAdd,
+                            name: nameOnAdd,
+                            symbol: symbolOnAdd,
+                            qty: newQty.current,
+                            price: newPurchasePrice.current,
+                          });
+                        }}
+                      >
+                        Add
+                      </Button>
+                    </TableCell>
                     <TableCell></TableCell>
                   </TableRow>
                 </TableBody>
@@ -265,5 +314,3 @@ const PortfolioStockModal = (props) => {
     </Dialog>
   );
 };
-
-export default PortfolioStockModal;

@@ -6,16 +6,21 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-
 import { Badge } from "@/components/ui/badge";
-import PortfolioModal from "./PortfolioCoinModal";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { PortfolioStockModal } from "./PortfolioStockModal";
 
 export const PortfolioStockWatchCard = (props) => {
   const queryClient = useQueryClient();
 
-  // let currentPrice = [];
+  const getCurrentPrice = (idx) => {
+    const result = props.currentPrice[idx]["c"];
+    if (!result) {
+      return 0;
+    } else {
+      return result;
+    }
+  };
 
   const currencyFormatter = (amount) => {
     return new Intl.NumberFormat("en-US", {
@@ -41,19 +46,6 @@ export const PortfolioStockWatchCard = (props) => {
       return formattedPercentage;
     }
   };
-
-  // useEffect(() => {
-  //   if (props.dataType === "stocks") {
-  //     currentPrice = queryClient.getQueriesData({
-  //       queryKey: ["qQuote"],
-  //     });
-  //     if (!currentPrice) {
-  //       currentPrice = queryClient.refetchQueries(["qQuote"]);
-  //     }
-  //   } else {
-  //     currentPrice = props.currentPrice;
-  //   }
-  // }, []);
 
   return (
     // <>
@@ -91,13 +83,13 @@ export const PortfolioStockWatchCard = (props) => {
                   <TableCell>{record.fields.symbol}</TableCell>
                   <TableCell>{record.fields.quantity}</TableCell>
                   <TableCell className="text-right">
-                    {currencyFormatter(props.currentPrice[idx]["c"])}
+                    {currencyFormatter(getCurrentPrice(idx))}
                   </TableCell>
                   <TableCell className="text-right">
                     {currencyFormatter(
                       portfolioValCalculator(
                         record.fields.quantity,
-                        props.currentPrice[idx]["c"]
+                        getCurrentPrice(idx)
                       )
                     )}
                   </TableCell>
@@ -105,7 +97,7 @@ export const PortfolioStockWatchCard = (props) => {
                     {calculateGain(
                       portfolioValCalculator(
                         record.fields.quantity,
-                        props.currentPrice[idx]["c"]
+                        getCurrentPrice(idx)
                       ),
                       record.fields.purchase_price
                     ) > 0 ? (
@@ -117,7 +109,7 @@ export const PortfolioStockWatchCard = (props) => {
                           calculateGain(
                             portfolioValCalculator(
                               record.fields.quantity,
-                              props.currentPrice[idx]["c"]
+                              getCurrentPrice(idx)
                             ),
                             record.fields.purchase_price
                           )
@@ -132,7 +124,7 @@ export const PortfolioStockWatchCard = (props) => {
                           calculateGain(
                             portfolioValCalculator(
                               record.fields.quantity,
-                              props.currentPrice[idx]["c"]
+                              getCurrentPrice(idx)
                             ),
                             record.fields.purchase_price
                           )
@@ -145,9 +137,9 @@ export const PortfolioStockWatchCard = (props) => {
             })}
           </TableBody>
         </Table>
-        {/* <p>
-          {props.dataType === "stocks" && JSON.stringify(props.currentPrice)}
-        </p> */}
+
+        {props.dataType === "stocks" &&
+          console.log(JSON.stringify(props.currentPrice))}
       </div>
     </div>
   );
