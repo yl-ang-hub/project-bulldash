@@ -1,9 +1,11 @@
+const PortfolioCoinWatchCard = React.lazy(
+  () => import("./PortfolioCoinWatchCard")
+);
 import {
   useSuspenseQuery,
   useQueryClient,
   useQuery,
 } from "@tanstack/react-query";
-import PortfolioWatchCard from "./PortfolioCoinWatchCard";
 import { readCoinsFromPortfolioDBQueryOptions } from "@/services/DBApiService";
 import { Suspense } from "react";
 import { coinsSGDPrice } from "@/data/qCoinsSGDPrice";
@@ -30,14 +32,14 @@ const PortfolioCoin = () => {
       <div className="w-1/2">
         <div>
           {qCoinsFromPortfolioDB.isSuccess && (
-            <PortfolioWatchCard
+            <PortfolioCoinWatchCard
               dataType="coin"
               headerRows={headerRows}
               portfolioData={qCoinsFromPortfolioDB.data}
               currentPrice={priceData}
             >
               Coins
-            </PortfolioWatchCard>
+            </PortfolioCoinWatchCard>
           )}
         </div>
       </div>
