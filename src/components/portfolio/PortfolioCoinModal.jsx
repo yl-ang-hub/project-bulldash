@@ -24,8 +24,9 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 // import { updateCoinPortfolioDB } from "@/services/DBApiService";
 
-const PortfolioModal = (props) => {
+const PortfolioCoinModal = (props) => {
   const queryClient = useQueryClient();
+  // TODO: IMPLEMENT SEARCH
   const [searchTerm, setSearchTerm] = useState("");
   const [onEdit, setOnEdit] = useState({});
   const qtyRefs = useRef([]);
@@ -262,4 +263,4 @@ const PortfolioModal = (props) => {
   );
 };
 
-export default PortfolioModal;
+export default PortfolioCoinModal;

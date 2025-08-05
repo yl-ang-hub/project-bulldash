@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/table";
 
 import { Badge } from "@/components/ui/badge";
-import PortfolioModal from "./PortfolioModal";
+import PortfolioModal from "./PortfolioCoinModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 

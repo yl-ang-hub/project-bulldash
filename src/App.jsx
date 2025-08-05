@@ -34,7 +34,9 @@ function App() {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div className="container mx-auto w-[500px] text-center">
-        <h1>BullDash</h1>
+        <h1 className="bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+          BullDash
+        </h1>
         <div className="container mx-auto">
           <Tabs defaultValue="portfolio" className="row mx-auto">
             <TabsList>

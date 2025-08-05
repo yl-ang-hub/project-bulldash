@@ -15,7 +15,7 @@ const Portfolio = () => {
   return (
     <div className="container flex justify-between">
       <PortfolioCoin />
-      <PortfolioStock />
+      {/* <PortfolioStock /> */}
     </div>
   );
 };
