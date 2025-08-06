@@ -4,6 +4,7 @@ import { fullCoinList } from "../data/fullCoinListing";
 // FETCH FUNCTIONS
 
 export const readDB = async (endpoint, args) => {
+  console.log("readDB is running");
   const defaultArgs = {
     method: "GET",
     headers: {
@@ -53,14 +54,14 @@ const readCoinsFromPortfolioDBQueryOptions = () => {
   });
 };
 
-export const readStocksFromPortfolioDBQueryOptions = () => {
-  const endpoint = "StocksPortfolioDB" + "?maxRecords=100&view=Grid%20view";
-  return queryOptions({
-    queryKey: ["readStocksFromPortfolioDB"],
-    queryFn: () => readDB(endpoint),
-    retry: 1,
-  });
-};
+// export const readStocksFromPortfolioDBQueryOptions = () => {
+//   const endpoint = "StocksPortfolioDB" + "?maxRecords=100&view=Grid%20view";
+//   return queryOptions({
+//     queryKey: ["readStocksFromPortfolioDB"],
+//     queryFn: () => readDB(endpoint),
+//     retry: 1,
+//   });
+// };
 
 // TEMPORARY DEV FUNCTIONS TO PULL FROM STORED VARIABLES
 // REDUCE API CALLS
