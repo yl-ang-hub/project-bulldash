@@ -7,6 +7,7 @@ import Portfolio from "./components/portfolio/Portfolio";
 import Watchlist from "./components/watchlist/Watchlist";
 import Market from "./components/market/Market";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 
 function App() {
   const queryClient = useQueryClient();
@@ -23,24 +24,49 @@ function App() {
   // const qCoinListing = useQuery(fullCoinListingQueryOptions());
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div className="container mx-auto w-[500px] text-center">
+    <Suspense fallback={<LoadingSpinner />}>
+      <div className="container mx-auto mt-6 w-[500px] text-center">
         <h1 className="bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
           BULLDASH
         </h1>
-        <div className="container mx-auto">
-          <Tabs defaultValue="portfolio" className="row mx-auto">
-            <TabsList>
-              <TabsTrigger value="portfolio">
-                <NavLink to="/portfolio">Portfolio</NavLink>
+        <div>
+          <Tabs defaultValue="portfolio" className="block my-6">
+            <TabsList className="">
+              <TabsTrigger
+                value="portfolio"
+                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+              >
+                <NavLink
+                  to="/portfolio"
+                  className="text-black font-normal !no-underline"
+                >
+                  Portfolio
+                </NavLink>
               </TabsTrigger>
-              <TabsTrigger value="watchlist">
-                <NavLink to="/watchlist">Watchlist</NavLink>
+              <TabsTrigger
+                value="watchlist"
+                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+              >
+                <NavLink
+                  to="/watchlist"
+                  className="text-black font-normal !no-underline"
+                >
+                  Watchlist
+                </NavLink>
               </TabsTrigger>
-              <TabsTrigger value="market">
-                <NavLink to="/market">Market</NavLink>
+              <TabsTrigger
+                value="market"
+                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+              >
+                <NavLink
+                  to="/market"
+                  className="text-black font-normal !no-underline"
+                >
+                  Market
+                </NavLink>
               </TabsTrigger>
             </TabsList>
+
             <Routes>
               <Route path="/" element={<Navigate replace to="/portfolio" />} />
               <Route

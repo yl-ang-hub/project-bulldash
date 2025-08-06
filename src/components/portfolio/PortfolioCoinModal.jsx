@@ -23,6 +23,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PortfolioCoinComboBox } from "./PortfolioCoinComboBox";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 // const PortfolioCoinComboBox = React.lazy(
 //   () => import("./PortfolioCoinComboBox")
 // );
@@ -191,7 +192,7 @@ const PortfolioCoinModal = (props) => {
   }, []);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <Dialog className="w-[800px] mx-auto py-8 px-4 md:px-6">
         <form>
           <DialogTrigger asChild>

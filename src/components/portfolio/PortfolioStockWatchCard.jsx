@@ -50,7 +50,7 @@ export const PortfolioStockWatchCard = (props) => {
 
   return (
     <>
-      <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
+      <div className="w-[800px] my-8 mt-12 mx-auto py-8 px-4 md:px-6 border rounded">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-1xl font-bold">{props.children}</h2>
           <PortfolioStockModal
@@ -58,7 +58,7 @@ export const PortfolioStockWatchCard = (props) => {
             headerRows={props.headerRows}
           />
         </div>
-        <div className="border rounded-lg overflow-hidden">
+        <div className="overflow-hidden">
           <Table className="min-w-fit">
             <TableHeader>
               <TableRow>

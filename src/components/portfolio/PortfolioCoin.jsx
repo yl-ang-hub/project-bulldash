@@ -5,6 +5,7 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { Suspense } from "react";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 const PortfolioCoinWatchCard = React.lazy(
   () => import("./PortfolioCoinWatchCard")
 );
@@ -77,20 +78,18 @@ const PortfolioCoin = () => {
   // console.log(qCoinQuotes.data);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div className="w-1/2">
-        <div>
-          {qCoinsFromPortfolioDB.isSuccess && (
-            <PortfolioCoinWatchCard
-              dataType="coin"
-              headerRows={headerRows}
-              portfolioData={qCoinsFromPortfolioDB.data}
-              currentPrice={qCoinQuotes.data}
-            >
-              Coins
-            </PortfolioCoinWatchCard>
-          )}
-        </div>
+    <Suspense fallback={<LoadingSpinner />}>
+      <div className="block">
+        {qCoinsFromPortfolioDB.isSuccess && (
+          <PortfolioCoinWatchCard
+            dataType="coin"
+            headerRows={headerRows}
+            portfolioData={qCoinsFromPortfolioDB.data}
+            currentPrice={qCoinQuotes.data}
+          >
+            Coins
+          </PortfolioCoinWatchCard>
+        )}
       </div>
     </Suspense>
   );

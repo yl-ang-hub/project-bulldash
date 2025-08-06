@@ -2,6 +2,7 @@ import { Suspense, useEffect } from "react";
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { PortfolioStockWatchCard } from "./PortfolioStockWatchCard";
 import { readDB } from "@/services/DBApiService";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 const PortfolioStock = () => {
   const headerRows = [
@@ -53,20 +54,18 @@ const PortfolioStock = () => {
   });
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <div className="w-1/2">
-        <div>
-          {qStocksFromPortfolioDB.isSuccess && (
-            <PortfolioStockWatchCard
-              dataType="stocks"
-              headerRows={headerRows}
-              portfolioData={qStocksFromPortfolioDB.data}
-              currentPrice={qStockQuotes.map((query) => query.data)}
-            >
-              Stocks
-            </PortfolioStockWatchCard>
-          )}
-        </div>
+    <Suspense fallback={<LoadingSpinner />}>
+      <div className="block">
+        {qStocksFromPortfolioDB.isSuccess && (
+          <PortfolioStockWatchCard
+            dataType="stocks"
+            headerRows={headerRows}
+            portfolioData={qStocksFromPortfolioDB.data}
+            currentPrice={qStockQuotes.map((query) => query.data)}
+          >
+            Stocks
+          </PortfolioStockWatchCard>
+        )}
       </div>
     </Suspense>
   );

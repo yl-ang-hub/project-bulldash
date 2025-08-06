@@ -22,6 +22,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PortfolioStockComboBox } from "./PortfolioStockComboBox";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 export const PortfolioStockModal = (props) => {
   const queryClient = useQueryClient();
@@ -186,186 +187,188 @@ export const PortfolioStockModal = (props) => {
   }, []);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Dialog className="w-[800px] mx-auto py-4 px-4 md:px-6">
-        <form>
-          <DialogTrigger asChild>
-            <Button variant="default" className="rounded">
-              Add / Edit
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="w-full">
-            <DialogHeader>
-              <DialogTitle>Edit Portfolio</DialogTitle>
-              <DialogDescription>
-                Make changes to your portfolio here.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="border rounded-lg overflow-hidden">
-              <ScrollArea
-                className="h-[400px] rounded-md border"
-                orientation="both"
-              >
-                <Table>
-                  <TableHeader className="sticky top-0 bg-background z-10">
-                    <TableRow>
-                      <TableHead>{props.headerRows[0]}</TableHead>
-                      <TableHead>{props.headerRows[1]}</TableHead>
-                      <TableHead>{props.headerRows[2]}</TableHead>
-                      <TableHead>Total Purchase Price</TableHead>
-                      <TableHead></TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {portfolioData?.records.map((datum) => {
-                      return (
-                        <TableRow key={datum.id}>
-                          <TableCell className="font-medium">
-                            {datum.fields.name}
-                          </TableCell>
-                          <TableCell>{datum.fields.symbol}</TableCell>
-                          <TableCell className="text-right min-w-[100px] justify-end">
-                            {onEdit[datum.id] ? (
-                              <Input
-                                className="min-w-[100px] text-right"
-                                defaultValue={datum.fields.quantity}
-                                onChange={(event) =>
-                                  (qtyRefs.current[datum.id] =
-                                    event.target.value)
-                                }
-                              />
-                            ) : (
-                              datum.fields.quantity
-                            )}
-                          </TableCell>
-                          <TableCell className="text-right min-w-[100px] justify-end">
-                            {onEdit[datum.id] ? (
-                              <Input
-                                className="min-w-[100px] pr-0 text-right"
-                                defaultValue={datum.fields.purchase_price}
-                                onChange={(event) =>
-                                  (purchasePriceRefs.current[datum.id] =
-                                    event.target.value)
-                                }
-                              />
-                            ) : (
-                              datum.fields.purchase_price
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            {onEdit[datum.id] ? (
+    <Suspense fallback={<LoadingSpinner />}>
+      <div>
+        <Dialog className="w-[1200px] mx-auto py-4 px-4 md:px-6">
+          <form>
+            <DialogTrigger asChild>
+              <Button variant="default" className="rounded">
+                Add / Edit
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="w-[1200px]">
+              <DialogHeader>
+                <DialogTitle>Edit Portfolio</DialogTitle>
+                <DialogDescription>
+                  Make changes to your portfolio here.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="border rounded-lg overflow-hidden">
+                <ScrollArea
+                  className="h-[360px] rounded-md border"
+                  orientation="both"
+                >
+                  <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                      <TableRow>
+                        <TableHead>{props.headerRows[0]}</TableHead>
+                        <TableHead>{props.headerRows[1]}</TableHead>
+                        <TableHead>{props.headerRows[2]}</TableHead>
+                        <TableHead>Total Purchase Price</TableHead>
+                        <TableHead></TableHead>
+                        <TableHead></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {portfolioData?.records.map((datum) => {
+                        return (
+                          <TableRow key={datum.id}>
+                            <TableCell className="font-medium">
+                              {datum.fields.name}
+                            </TableCell>
+                            <TableCell>{datum.fields.symbol}</TableCell>
+                            <TableCell className="text-right min-w-[100px] justify-end">
+                              {onEdit[datum.id] ? (
+                                <Input
+                                  className="min-w-[100px] text-right"
+                                  defaultValue={datum.fields.quantity}
+                                  onChange={(event) =>
+                                    (qtyRefs.current[datum.id] =
+                                      event.target.value)
+                                  }
+                                />
+                              ) : (
+                                datum.fields.quantity
+                              )}
+                            </TableCell>
+                            <TableCell className="text-right min-w-[100px] justify-end">
+                              {onEdit[datum.id] ? (
+                                <Input
+                                  className="min-w-[100px] pr-0 text-right"
+                                  defaultValue={datum.fields.purchase_price}
+                                  onChange={(event) =>
+                                    (purchasePriceRefs.current[datum.id] =
+                                      event.target.value)
+                                  }
+                                />
+                              ) : (
+                                datum.fields.purchase_price
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {onEdit[datum.id] ? (
+                                <Button
+                                  className="rounded max-w-[70px]"
+                                  onClick={() =>
+                                    handleSubmit(
+                                      datum.id,
+                                      datum.fields.quantity,
+                                      datum.fields.purchase_price
+                                    )
+                                  }
+                                >
+                                  Submit
+                                </Button>
+                              ) : (
+                                <Button
+                                  variant="outline"
+                                  className="rounded max-w-[70px]"
+                                  onClick={() => handleEdit(datum.id)}
+                                >
+                                  Edit
+                                </Button>
+                              )}
+                            </TableCell>
+                            <TableCell>
                               <Button
+                                variant="destructive"
                                 className="rounded max-w-[70px]"
                                 onClick={() =>
-                                  handleSubmit(
-                                    datum.id,
-                                    datum.fields.quantity,
-                                    datum.fields.purchase_price
-                                  )
+                                  deleteAssetInPortfolioDB.mutate(datum.id)
                                 }
                               >
-                                Submit
+                                Delete
                               </Button>
-                            ) : (
-                              <Button
-                                variant="outline"
-                                className="rounded max-w-[70px]"
-                                onClick={() => handleEdit(datum.id)}
-                              >
-                                Edit
-                              </Button>
-                            )}
-                          </TableCell>
-                          <TableCell>
-                            <Button
-                              variant="destructive"
-                              className="rounded max-w-[70px]"
-                              onClick={() =>
-                                deleteAssetInPortfolioDB.mutate(datum.id)
-                              }
-                            >
-                              Delete
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                    <TableRow>
-                      <TableCell>
-                        {/* TODO: Optimise and Solve long loading time */}
-                        <PortfolioStockComboBox
-                          className="max-w-[100px]"
-                          showSymbolFn={showAssetSymbolOnAdd}
-                          dropdownValue={dropdownValue}
-                          setDropdownValue={setDropdownValue}
-                        />
-                      </TableCell>
-                      <TableCell>{symbolOnAdd}</TableCell>
-                      <TableCell className="text-right min-w-[100px] justify-end">
-                        {/* TODO: Validate that it is Float */}
-                        <Input
-                          className="min-w-[100px] pr-0 text-right"
-                          defaultValue={newQty.current}
-                          onChange={(event) =>
-                            (newQty.current = parseFloat(event.target.value))
-                          }
-                        />
-                      </TableCell>
-                      <TableCell className="text-right min-w-[100px] justify-end">
-                        {/* TODO: Validate that it is Float */}
-                        <Input
-                          className="min-w-[100px] pr-0 text-right"
-                          defaultValue={newPurchasePrice.current}
-                          onChange={(event) =>
-                            (newPurchasePrice.current = parseFloat(
-                              event.target.value
-                            ))
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          className="rounded max-w-[70px]"
-                          onClick={() => {
-                            console.log(
-                              idTickerOnAdd,
-                              nameOnAdd,
-                              symbolOnAdd,
-                              newQty.current,
-                              newPurchasePrice.current
-                            );
-                            addAssetInPortfolioDB.mutate({
-                              id: idTickerOnAdd,
-                              name: nameOnAdd,
-                              symbol: symbolOnAdd,
-                              qty: newQty.current,
-                              price: newPurchasePrice.current,
-                            });
-                          }}
-                        >
-                          Add
-                        </Button>
-                      </TableCell>
-                      <TableCell></TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </ScrollArea>
-            </div>
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button variant="outline" className="rounded">
-                  Return
-                </Button>
-              </DialogClose>
-              {/* <Button type="" className="rounded">
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                      <TableRow>
+                        <TableCell>
+                          {/* TODO: Optimise and Solve long loading time */}
+                          <PortfolioStockComboBox
+                            className="max-w-[100px]"
+                            showSymbolFn={showAssetSymbolOnAdd}
+                            dropdownValue={dropdownValue}
+                            setDropdownValue={setDropdownValue}
+                          />
+                        </TableCell>
+                        <TableCell>{symbolOnAdd}</TableCell>
+                        <TableCell className="text-right min-w-[100px] justify-end">
+                          {/* TODO: Validate that it is Float */}
+                          <Input
+                            className="min-w-[100px] pr-0 text-right"
+                            defaultValue={newQty.current}
+                            onChange={(event) =>
+                              (newQty.current = parseFloat(event.target.value))
+                            }
+                          />
+                        </TableCell>
+                        <TableCell className="text-right min-w-[100px] justify-end">
+                          {/* TODO: Validate that it is Float */}
+                          <Input
+                            className="min-w-[100px] pr-0 text-right"
+                            defaultValue={newPurchasePrice.current}
+                            onChange={(event) =>
+                              (newPurchasePrice.current = parseFloat(
+                                event.target.value
+                              ))
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            className="rounded max-w-[70px]"
+                            onClick={() => {
+                              console.log(
+                                idTickerOnAdd,
+                                nameOnAdd,
+                                symbolOnAdd,
+                                newQty.current,
+                                newPurchasePrice.current
+                              );
+                              addAssetInPortfolioDB.mutate({
+                                id: idTickerOnAdd,
+                                name: nameOnAdd,
+                                symbol: symbolOnAdd,
+                                qty: newQty.current,
+                                price: newPurchasePrice.current,
+                              });
+                            }}
+                          >
+                            Add
+                          </Button>
+                        </TableCell>
+                        <TableCell></TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="outline" className="rounded">
+                    Return
+                  </Button>
+                </DialogClose>
+                {/* <Button type="" className="rounded">
               Save changes
             </Button> */}
-            </DialogFooter>
-          </DialogContent>
-        </form>
-      </Dialog>
+              </DialogFooter>
+            </DialogContent>
+          </form>
+        </Dialog>
+      </div>
     </Suspense>
   );
 };

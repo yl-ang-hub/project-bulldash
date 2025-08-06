@@ -14,6 +14,7 @@ import {
   useQueries,
   useSuspenseQuery,
 } from "@tanstack/react-query";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 const PortfolioChart = () => {
   const queryClient = useQueryClient();
@@ -60,7 +61,7 @@ const PortfolioChart = () => {
   // }, [selectCoinId]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<LoadingSpinner />}>
       <div>
         {/* <p>{coinPortfolio ? JSON.stringify(coinPortfolio) : ""}</p>
         <p>
