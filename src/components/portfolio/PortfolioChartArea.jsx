@@ -74,6 +74,180 @@ const fetchCoinChartData = async (idTicker) => {
 //   return { symbol: chartData };
 // };
 
+export function PortfolioChartArea(props) {
+  const queryClient = useQueryClient();
+  // const [displayedSymbol, setDisplayedSymbol] = useState("");
+  const [timeRange, setTimeRange] = React.useState("90d");
+
+  const qCoinChartData = useQuery({
+    queryKey: ["qCoinsUSDChartData", props.idTicker],
+    queryFn: () => fetchCoinChartData(props.idTicker),
+    retry: 0,
+    staleTime: Infinity,
+  });
+
+  const filteredData = qCoinChartData.data?.filter((item) => {
+    // const filteredData = chartData.filter((item) => {
+    console.log(JSON.stringify(qCoinChartData.data));
+    const date = new Date(item.date);
+    const referenceDate = new Date("2025-08-07");
+    let daysToSubtract = 90;
+    if (timeRange === "30d") {
+      daysToSubtract = 30;
+    } else if (timeRange === "7d") {
+      daysToSubtract = 7;
+    }
+    const startDate = new Date(referenceDate);
+    startDate.setDate(startDate.getDate() - daysToSubtract);
+
+    return date >= startDate;
+  });
+
+  const maxY = qCoinChartData.data?.reduce((acc, curr) => {
+    return Math.max(acc, curr.price * 1.05);
+  }, 0);
+  const minY = qCoinChartData.data?.reduce((acc, curr) => {
+    return Math.min(acc, curr.price * 0.95);
+  }, maxY);
+  console.log(minY);
+  console.log(maxY);
+
+  // useEffect(() => {
+  //   setDisplayedSymbol(props.idTicker);
+  //   queryClient.invalidateQueries(["qCoinsUSDChartData", props.idTicker]);
+  // }, [props.idTicker]);
+
+  const chartConfig = {
+    // visitors: {
+    //   label: "Visitors",
+    // },
+    // price: {
+    //   label: "Price",
+    //   color: "var(--chart-1)",
+    // },
+    price: {
+      label: "Price (USD)",
+      color: "var(--chart-5)",
+    },
+  };
+
+  return (
+    <Card className="pt-0 mb-20">
+      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
+        <div className="grid flex-1 gap-1 text-center pl-32">
+          <CardTitle>Area Chart for {props.idTicker} - Interactive</CardTitle>
+          <CardDescription>Showing price for the last 3 months</CardDescription>
+        </div>
+        <Select value={timeRange} onValueChange={setTimeRange}>
+          <SelectTrigger
+            className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
+            aria-label="Select a value"
+          >
+            <SelectValue placeholder="Last 3 months" />
+          </SelectTrigger>
+          <SelectContent className="rounded-xl">
+            <SelectItem value="90d" className="rounded-lg">
+              Last 3 months
+            </SelectItem>
+            <SelectItem value="30d" className="rounded-lg">
+              Last 30 days
+            </SelectItem>
+            <SelectItem value="7d" className="rounded-lg">
+              Last 7 days
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </CardHeader>
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+        <ChartContainer
+          config={chartConfig}
+          className="aspect-auto h-[360px] w-full"
+        >
+          <AreaChart data={filteredData}>
+            <defs>
+              <linearGradient id="fillPrice" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-price)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-price)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient>
+              {/* <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="5%"
+                  stopColor="var(--color-mobile)"
+                  stopOpacity={0.8}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="var(--color-mobile)"
+                  stopOpacity={0.1}
+                />
+              </linearGradient> */}
+            </defs>
+            <CartesianGrid vertical={true} />
+            <XAxis
+              dataKey="date"
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              minTickGap={32}
+              tickFormatter={(value) => {
+                const date = new Date(value);
+                return date.toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                });
+              }}
+            />
+            <YAxis
+              type="number"
+              domain={[minY, maxY]}
+              allowDataOverflow={true}
+              hide
+            />
+
+            <ChartTooltip
+              cursor={false}
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(value) => {
+                    return new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    });
+                  }}
+                  indicator="dot"
+                />
+              }
+            />
+            {/* <Area
+              dataKey="mobile"
+              type="natural"
+              fill="url(#fillMobile)"
+              stroke="var(--color-mobile)"
+              stackId="a"
+            /> */}
+            <Area
+              dataKey="price"
+              type="natural"
+              fill="url(#fillPrice)"
+              stroke="var(--color-price)"
+              stackId="a"
+            />
+            <ChartLegend content={<ChartLegendContent />} />
+          </AreaChart>
+        </ChartContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
 // const chartData = [
 //   { date: "2024-04-01", price: 222, mobile: 150 },
 //   { date: "2024-04-02", price: 97, mobile: 180 },
@@ -168,269 +342,96 @@ const fetchCoinChartData = async (idTicker) => {
 //   { date: "2024-06-30", price: 446, mobile: 400 },
 // ];
 
-const chartData = [
-  { date: "2025-05-09", price: 103076.27555512934 },
-  { date: "2025-05-10", price: 102962.54045692299 },
-  { date: "2025-05-11", price: 104630.8792994166 },
-  { date: "2025-05-12", price: 103994.061616746 },
-  { date: "2025-05-13", price: 102876.8304286011 },
-  { date: "2025-05-14", price: 104184.49039270742 },
-  { date: "2025-05-15", price: 103594.42575090709 },
-  { date: "2025-05-16", price: 103708.85136423641 },
-  { date: "2025-05-17", price: 103556.03493982446 },
-  { date: "2025-05-18", price: 103212.36483885496 },
-  { date: "2025-05-19", price: 106030.6376831359 },
-  { date: "2025-05-20", price: 105629.41580436694 },
-  { date: "2025-05-21", price: 106786.71995834043 },
-  { date: "2025-05-22", price: 109665.86371625263 },
-  { date: "2025-05-23", price: 111560.356938144 },
-  { date: "2025-05-24", price: 107216.66856870624 },
-  { date: "2025-05-25", price: 107831.36374380375 },
-  { date: "2025-05-26", price: 108861.81037744327 },
-  { date: "2025-05-27", price: 109377.71513263129 },
-  { date: "2025-05-28", price: 109068.45694901445 },
-  { date: "2025-05-29", price: 107838.18431100152 },
-  { date: "2025-05-30", price: 105745.41660358038 },
-  { date: "2025-05-31", price: 104010.91956242644 },
-  { date: "2025-06-01", price: 104687.50742934884 },
-  { date: "2025-06-02", price: 105710.00593822816 },
-  { date: "2025-06-03", price: 105884.74263221149 },
-  { date: "2025-06-04", price: 105434.47745144971 },
-  { date: "2025-06-05", price: 104812.9182188067 },
-  { date: "2025-06-06", price: 101650.7387545425 },
-  { date: "2025-06-07", price: 104409.74967959142 },
-  { date: "2025-06-08", price: 105681.4546141758 },
-  { date: "2025-06-09", price: 105692.24740699006 },
-  { date: "2025-06-10", price: 110261.57485948496 },
-  { date: "2025-06-11", price: 110212.73252109604 },
-  { date: "2025-06-12", price: 108679.9760916168 },
-  { date: "2025-06-13", price: 105979.22902375912 },
-  { date: "2025-06-14", price: 106045.56440819203 },
-  { date: "2025-06-15", price: 105482.90611628917 },
-  { date: "2025-06-16", price: 105554.49383061715 },
-  { date: "2025-06-17", price: 106951.2720181497 },
-  { date: "2025-06-18", price: 104683.42479835715 },
-  { date: "2025-06-19", price: 104722.695052907 },
-  { date: "2025-06-20", price: 104690.65002458123 },
-  { date: "2025-06-21", price: 103290.105144757 },
-  { date: "2025-06-22", price: 101532.5683847329 },
-  { date: "2025-06-23", price: 100852.58264648831 },
-  { date: "2025-06-24", price: 105511.62437933135 },
-  { date: "2025-06-25", price: 105976.06929808448 },
-  { date: "2025-06-26", price: 107238.53045016268 },
-  { date: "2025-06-27", price: 106984.01253775663 },
-  { date: "2025-06-28", price: 107078.91560644074 },
-  { date: "2025-06-29", price: 107331.58548463577 },
-  { date: "2025-06-30", price: 108396.61631317894 },
-  { date: "2025-07-01", price: 107132.79910701896 },
-  { date: "2025-07-02", price: 105613.39974163055 },
-  { date: "2025-07-03", price: 108824.44423167943 },
-  { date: "2025-07-04", price: 109602.20483914016 },
-  { date: "2025-07-05", price: 108040.8919400104 },
-  { date: "2025-07-06", price: 108217.46849992426 },
-  { date: "2025-07-07", price: 109215.19771840284 },
-  { date: "2025-07-08", price: 108300.71675785031 },
-  { date: "2025-07-09", price: 108953.19187727802 },
-  { date: "2025-07-10", price: 111327.53054245669 },
-  { date: "2025-07-11", price: 115879.65030112496 },
-  { date: "2025-07-12", price: 117571.02510036016 },
-  { date: "2025-07-13", price: 117418.95745007684 },
-  { date: "2025-07-14", price: 119117.55666327637 },
-  { date: "2025-07-15", price: 119833.67446712355 },
-  { date: "2025-07-16", price: 117678.19493404306 },
-  { date: "2025-07-17", price: 118748.1627367753 },
-  { date: "2025-07-18", price: 119445.36520434043 },
-  { date: "2025-07-19", price: 117988.94664455787 },
-  { date: "2025-07-20", price: 117901.62655900871 },
-  { date: "2025-07-21", price: 117256.9208222684 },
-  { date: "2025-07-22", price: 117482.46977767294 },
-  { date: "2025-07-23", price: 119955.79570607653 },
-  { date: "2025-07-24", price: 118629.05588130427 },
-  { date: "2025-07-25", price: 118354.43517438594 },
-  { date: "2025-07-26", price: 117540.80837085741 },
-  { date: "2025-07-27", price: 117959.54234360624 },
-  { date: "2025-07-28", price: 119418.91405141471 },
-  { date: "2025-07-29", price: 118003.30201607826 },
-  { date: "2025-07-30", price: 117853.30892863822 },
-  { date: "2025-07-31", price: 117833.24087995925 },
-  { date: "2025-08-01", price: 115700.00243915782 },
-  { date: "2025-08-02", price: 113234.6051343189 },
-  { date: "2025-08-03", price: 112554.90232221723 },
-  { date: "2025-08-04", price: 114199.10966460757 },
-  { date: "2025-08-05", price: 115138.68613070177 },
-  { date: "2025-08-06", price: 114128.35408881678 },
-  { date: "2025-08-06", price: 115389.78344511235 },
-];
-
-const chartConfig = {
-  // visitors: {
-  //   label: "Visitors",
-  // },
-  // price: {
-  //   label: "Price",
-  //   color: "var(--chart-1)",
-  // },
-  price: {
-    label: "Mobile",
-    color: "var(--chart-2)",
-  },
-};
-
-export function PortfolioChartArea(props) {
-  const queryClient = useQueryClient();
-  const [displayedSymbol, setDisplayedSymbol] = useState("");
-  const [timeRange, setTimeRange] = React.useState("90d");
-
-  const qCoinChartData = useQuery({
-    queryKey: ["qCoinsUSDChartData", props.idTicker],
-    queryFn: () => fetchCoinChartData(props.idTicker),
-    retry: 0,
-    staleTime: Infinity,
-  });
-
-  // const filteredData = qCoinChartData.data?.filter((item) => {
-  const filteredData = chartData.filter((item) => {
-    console.log(JSON.stringify(qCoinChartData.data));
-    const date = new Date(item.date);
-    const referenceDate = new Date("2025-08-07");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
-    }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-
-    return date >= startDate;
-  });
-
-  const maxY = filteredData.reduce((acc, curr) => {
-    return Math.max(acc, curr.price * 1.05);
-  }, 0);
-  const minY = filteredData.reduce((acc, curr) => {
-    return Math.min(acc, curr.price * 0.95);
-  }, maxY);
-  console.log(minY);
-  console.log(maxY);
-
-  useEffect(() => {
-    setDisplayedSymbol(props.idTicker);
-    queryClient.invalidateQueries(["qCoinsUSDChartData", props.idTicker]);
-  }, [props.idTicker]);
-
-  return (
-    <Card className="pt-0">
-      <CardHeader className="flex items-center gap-2 space-y-0 border-b py-5 sm:flex-row">
-        <div className="grid flex-1 gap-1">
-          <CardTitle>Area Chart - Interactive</CardTitle>
-          <CardDescription>Showing price for the last 3 months</CardDescription>
-        </div>
-        <Select value={timeRange} onValueChange={setTimeRange}>
-          <SelectTrigger
-            className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex"
-            aria-label="Select a value"
-          >
-            <SelectValue placeholder="Last 3 months" />
-          </SelectTrigger>
-          <SelectContent className="rounded-xl">
-            <SelectItem value="90d" className="rounded-lg">
-              Last 3 months
-            </SelectItem>
-            <SelectItem value="30d" className="rounded-lg">
-              Last 30 days
-            </SelectItem>
-            <SelectItem value="7d" className="rounded-lg">
-              Last 7 days
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
-        >
-          <AreaChart data={filteredData}>
-            <defs>
-              <linearGradient id="fillPrice" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-price)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-price)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-              {/* <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                <stop
-                  offset="5%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor="var(--color-mobile)"
-                  stopOpacity={0.1}
-                />
-              </linearGradient> */}
-            </defs>
-            <CartesianGrid vertical={true} />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              minTickGap={32}
-              tickFormatter={(value) => {
-                const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
-                  month: "short",
-                  day: "numeric",
-                });
-              }}
-            />
-            <YAxis
-              type="number"
-              domain={[minY, maxY]}
-              allowDataOverflow={true}
-            />
-
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
-                  indicator="dot"
-                />
-              }
-            />
-            {/* <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            /> */}
-            <Area
-              dataKey="price"
-              type="natural"
-              fill="url(#fillPrice)"
-              stroke="var(--color-price)"
-              stackId="a"
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-          </AreaChart>
-        </ChartContainer>
-      </CardContent>
-    </Card>
-  );
-}
+// const chartData = [
+//   { date: "2025-05-09", price: 103076.27555512934 },
+//   { date: "2025-05-10", price: 102962.54045692299 },
+//   { date: "2025-05-11", price: 104630.8792994166 },
+//   { date: "2025-05-12", price: 103994.061616746 },
+//   { date: "2025-05-13", price: 102876.8304286011 },
+//   { date: "2025-05-14", price: 104184.49039270742 },
+//   { date: "2025-05-15", price: 103594.42575090709 },
+//   { date: "2025-05-16", price: 103708.85136423641 },
+//   { date: "2025-05-17", price: 103556.03493982446 },
+//   { date: "2025-05-18", price: 103212.36483885496 },
+//   { date: "2025-05-19", price: 106030.6376831359 },
+//   { date: "2025-05-20", price: 105629.41580436694 },
+//   { date: "2025-05-21", price: 106786.71995834043 },
+//   { date: "2025-05-22", price: 109665.86371625263 },
+//   { date: "2025-05-23", price: 111560.356938144 },
+//   { date: "2025-05-24", price: 107216.66856870624 },
+//   { date: "2025-05-25", price: 107831.36374380375 },
+//   { date: "2025-05-26", price: 108861.81037744327 },
+//   { date: "2025-05-27", price: 109377.71513263129 },
+//   { date: "2025-05-28", price: 109068.45694901445 },
+//   { date: "2025-05-29", price: 107838.18431100152 },
+//   { date: "2025-05-30", price: 105745.41660358038 },
+//   { date: "2025-05-31", price: 104010.91956242644 },
+//   { date: "2025-06-01", price: 104687.50742934884 },
+//   { date: "2025-06-02", price: 105710.00593822816 },
+//   { date: "2025-06-03", price: 105884.74263221149 },
+//   { date: "2025-06-04", price: 105434.47745144971 },
+//   { date: "2025-06-05", price: 104812.9182188067 },
+//   { date: "2025-06-06", price: 101650.7387545425 },
+//   { date: "2025-06-07", price: 104409.74967959142 },
+//   { date: "2025-06-08", price: 105681.4546141758 },
+//   { date: "2025-06-09", price: 105692.24740699006 },
+//   { date: "2025-06-10", price: 110261.57485948496 },
+//   { date: "2025-06-11", price: 110212.73252109604 },
+//   { date: "2025-06-12", price: 108679.9760916168 },
+//   { date: "2025-06-13", price: 105979.22902375912 },
+//   { date: "2025-06-14", price: 106045.56440819203 },
+//   { date: "2025-06-15", price: 105482.90611628917 },
+//   { date: "2025-06-16", price: 105554.49383061715 },
+//   { date: "2025-06-17", price: 106951.2720181497 },
+//   { date: "2025-06-18", price: 104683.42479835715 },
+//   { date: "2025-06-19", price: 104722.695052907 },
+//   { date: "2025-06-20", price: 104690.65002458123 },
+//   { date: "2025-06-21", price: 103290.105144757 },
+//   { date: "2025-06-22", price: 101532.5683847329 },
+//   { date: "2025-06-23", price: 100852.58264648831 },
+//   { date: "2025-06-24", price: 105511.62437933135 },
+//   { date: "2025-06-25", price: 105976.06929808448 },
+//   { date: "2025-06-26", price: 107238.53045016268 },
+//   { date: "2025-06-27", price: 106984.01253775663 },
+//   { date: "2025-06-28", price: 107078.91560644074 },
+//   { date: "2025-06-29", price: 107331.58548463577 },
+//   { date: "2025-06-30", price: 108396.61631317894 },
+//   { date: "2025-07-01", price: 107132.79910701896 },
+//   { date: "2025-07-02", price: 105613.39974163055 },
+//   { date: "2025-07-03", price: 108824.44423167943 },
+//   { date: "2025-07-04", price: 109602.20483914016 },
+//   { date: "2025-07-05", price: 108040.8919400104 },
+//   { date: "2025-07-06", price: 108217.46849992426 },
+//   { date: "2025-07-07", price: 109215.19771840284 },
+//   { date: "2025-07-08", price: 108300.71675785031 },
+//   { date: "2025-07-09", price: 108953.19187727802 },
+//   { date: "2025-07-10", price: 111327.53054245669 },
+//   { date: "2025-07-11", price: 115879.65030112496 },
+//   { date: "2025-07-12", price: 117571.02510036016 },
+//   { date: "2025-07-13", price: 117418.95745007684 },
+//   { date: "2025-07-14", price: 119117.55666327637 },
+//   { date: "2025-07-15", price: 119833.67446712355 },
+//   { date: "2025-07-16", price: 117678.19493404306 },
+//   { date: "2025-07-17", price: 118748.1627367753 },
+//   { date: "2025-07-18", price: 119445.36520434043 },
+//   { date: "2025-07-19", price: 117988.94664455787 },
+//   { date: "2025-07-20", price: 117901.62655900871 },
+//   { date: "2025-07-21", price: 117256.9208222684 },
+//   { date: "2025-07-22", price: 117482.46977767294 },
+//   { date: "2025-07-23", price: 119955.79570607653 },
+//   { date: "2025-07-24", price: 118629.05588130427 },
+//   { date: "2025-07-25", price: 118354.43517438594 },
+//   { date: "2025-07-26", price: 117540.80837085741 },
+//   { date: "2025-07-27", price: 117959.54234360624 },
+//   { date: "2025-07-28", price: 119418.91405141471 },
+//   { date: "2025-07-29", price: 118003.30201607826 },
+//   { date: "2025-07-30", price: 117853.30892863822 },
+//   { date: "2025-07-31", price: 117833.24087995925 },
+//   { date: "2025-08-01", price: 115700.00243915782 },
+//   { date: "2025-08-02", price: 113234.6051343189 },
+//   { date: "2025-08-03", price: 112554.90232221723 },
+//   { date: "2025-08-04", price: 114199.10966460757 },
+//   { date: "2025-08-05", price: 115138.68613070177 },
+//   { date: "2025-08-06", price: 114128.35408881678 },
+//   { date: "2025-08-06", price: 115389.78344511235 },
+// ];

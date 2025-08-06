@@ -55,6 +55,10 @@ const PortfolioChart = () => {
     setSelectCoinId(idTickerArray[0]);
   }, [qCoinsFromPortfolioDB.data]);
 
+  // useEffect(() => {
+  //   queryClient.invalidateQueries(["qCoinsUSDChartData"]);
+  // }, [selectCoinId]);
+
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <div>
@@ -62,8 +66,12 @@ const PortfolioChart = () => {
         <p>
           {coinPortfolio ? getFormattedCoinChartData() : "Didn't run formatter"}
         </p> */}
-        <Select value={selectCoinId} onValueChange={setSelectCoinId}>
-          <SelectTrigger className="w-[180px]">
+        <Select
+          className="rounded"
+          value={selectCoinId}
+          onValueChange={setSelectCoinId}
+        >
+          <SelectTrigger className="w-[180px] rounded">
             <SelectValue placeholder="Select an asset">
               {selectCoinId}
             </SelectValue>
