@@ -66,7 +66,7 @@ const PortfolioCoin = () => {
         throw new Error("Request error");
       }
       const data = await res.json();
-      console.log(JSON.stringify(data));
+      // console.log(JSON.stringify(data));
       return data;
     },
     retry: 0,
@@ -74,7 +74,7 @@ const PortfolioCoin = () => {
     enabled: !!qCoinsFromPortfolioDB.data,
   });
 
-  console.log(qCoinQuotes.data);
+  // console.log(qCoinQuotes.data);
 
   return (
     <Suspense fallback={<div>Loading...</div>}>

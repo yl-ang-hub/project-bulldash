@@ -36,8 +36,8 @@ const PortfolioCoinModal = (props) => {
   const [idTickerOnAdd, setIdTickerOnAdd] = useState("");
   const qtyRefs = useRef([]);
   const purchasePriceRefs = useRef([]);
-  const newQty = useRef(0);
-  const newPurchasePrice = useRef(0);
+  const [newQty, setNewQty] = useState("0");
+  const [newPurchasePrice, setNewPurchasePrice] = useState("0");
   const [dropdownValue, setDropdownValue] = useState("");
 
   // Get portfolio data
@@ -73,7 +73,7 @@ const PortfolioCoinModal = (props) => {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
-      await queryClient.invalidateQueries(["qCoinsUSDPrice"]);
+      await queryClient.invalidateQueries(["qQuote"]);
     },
     onSettled: () => {
       const newState = { ...onEdit };
@@ -124,8 +124,8 @@ const PortfolioCoinModal = (props) => {
               idTicker: id,
               symbol: symbol,
               name: name,
-              quantity: qty,
-              purchase_price: price,
+              quantity: parseFloat(qty),
+              purchase_price: parseFloat(price),
             },
           }),
         }
@@ -142,14 +142,15 @@ const PortfolioCoinModal = (props) => {
     onSuccess: async () => {
       console.log("add coin is successful, callback running");
       await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
-      await queryClient.invalidateQueries(["qCoinsUSDPrice"]);
+      await queryClient.invalidateQueries(["qQuote"]);
       // ISSUE: No re-render of component + child despite state change or query invalidation
       // ComboBox & useRefs not cleared & price/quantity not updated in WatchCard
+      setNewQty("0");
+      setNewPurchasePrice("0");
       setIdTickerOnAdd("");
       setNameOnAdd("");
       setSymbolOnAdd("");
-      newQty.current = 0;
-      newPurchasePrice.current = 0;
+      setDropdownValue("");
     },
   });
 
@@ -206,7 +207,10 @@ const PortfolioCoinModal = (props) => {
               </DialogDescription>
             </DialogHeader>
             <div className="border rounded-lg overflow-hidden">
-              <ScrollArea className="rounded-md border" orientation="both">
+              <ScrollArea
+                className="h-[400px] rounded-md border"
+                orientation="both"
+              >
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
@@ -307,21 +311,17 @@ const PortfolioCoinModal = (props) => {
                         {/* TODO: Validate that it is Float */}
                         <Input
                           className="min-w-[100px] pr-0 text-right"
-                          defaultValue={newQty.current}
-                          onChange={(event) =>
-                            (newQty.current = parseFloat(event.target.value))
-                          }
+                          value={newQty}
+                          onChange={(event) => setNewQty(event.target.value)}
                         />
                       </TableCell>
                       <TableCell className="text-right min-w-[100px] justify-end">
                         {/* TODO: Validate that it is Float */}
                         <Input
                           className="min-w-[100px] pr-0 text-right"
-                          defaultValue={newPurchasePrice.current}
+                          value={newPurchasePrice}
                           onChange={(event) =>
-                            (newPurchasePrice.current = parseFloat(
-                              event.target.value
-                            ))
+                            setNewPurchasePrice(event.target.value)
                           }
                         />
                       </TableCell>
@@ -333,15 +333,15 @@ const PortfolioCoinModal = (props) => {
                               idTickerOnAdd,
                               nameOnAdd,
                               symbolOnAdd,
-                              newQty.current,
-                              newPurchasePrice.current
+                              newQty,
+                              newPurchasePrice
                             );
                             addCoinInPortfolioDB.mutate({
                               id: idTickerOnAdd,
                               name: nameOnAdd,
                               symbol: symbolOnAdd,
-                              qty: newQty.current,
-                              price: newPurchasePrice.current,
+                              qty: newQty,
+                              price: newPurchasePrice,
                             });
                           }}
                         >
