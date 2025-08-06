@@ -14,7 +14,8 @@ export const PortfolioStockWatchCard = (props) => {
   const queryClient = useQueryClient();
 
   const getCurrentPrice = (idx) => {
-    const result = props.currentPrice[idx]["c"];
+    // console.log(JSON.stringify(props.currentPrice));
+    const result = props.currentPrice.at(idx)?.c;
     if (!result) {
       return 0;
     } else {
@@ -48,104 +49,98 @@ export const PortfolioStockWatchCard = (props) => {
   };
 
   return (
-    // <>
-    //   <h1>{JSON.stringify(props.currentPrice)}</h1>
-    //   <h1>
-    //     {props.portfolioData?.records.map((record, idx) => {
-    //       console.log("current price is ", props.currentPrice[idx]["c"]);
-    //     })}
-    //   </h1>
-    // </>
-    <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-1xl font-bold">{props.children}</h2>
-        {/* <PortfolioStockModal
-          dataType={props.dataType}
-          headerRows={props.headerRows}
-        /> */}
-      </div>
-      <div className="border rounded-lg overflow-hidden">
-        <Table className="min-w-fit">
-          <TableHeader>
-            <TableRow>
-              {props.headerRows.map((row, idx) => (
-                <TableHead key={idx}>{row}</TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {props.portfolioData?.records.map((record, idx) => {
-              return (
-                <TableRow key={idx}>
-                  <TableCell className="font-medium">
-                    {record.fields.name}
-                  </TableCell>
-                  <TableCell>{record.fields.symbol}</TableCell>
-                  <TableCell>{record.fields.quantity}</TableCell>
-                  <TableCell className="text-right">
-                    {currencyFormatter(getCurrentPrice(idx))}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {currencyFormatter(
-                      portfolioValCalculator(
-                        record.fields.quantity,
-                        getCurrentPrice(idx)
-                      )
-                    )}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {calculateGain(
-                      portfolioValCalculator(
-                        record.fields.quantity,
-                        getCurrentPrice(idx)
-                      ),
-                      record.fields.purchase_price
-                    ) > 0 ? (
-                      <Badge
-                        variant="outline"
-                        className="bg-green-500 text-green-50"
-                      >
-                        {formatGain(
-                          calculateGain(
-                            portfolioValCalculator(
-                              record.fields.quantity,
-                              getCurrentPrice(idx)
-                            ),
-                            record.fields.purchase_price
-                          )
-                        )}
-                      </Badge>
-                    ) : (
-                      <Badge
-                        variant="outline"
-                        className="bg-red-500 text-red-50"
-                      >
-                        {formatGain(
-                          calculateGain(
-                            portfolioValCalculator(
-                              record.fields.quantity,
-                              getCurrentPrice(idx)
-                            ),
-                            record.fields.purchase_price
-                          )
-                        )}
-                      </Badge>
-                    )}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
+    <>
+      <div className="w-full max-w-4xl mx-auto py-8 px-4 md:px-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-1xl font-bold">{props.children}</h2>
+          <PortfolioStockModal
+            dataType={props.dataType}
+            headerRows={props.headerRows}
+          />
+        </div>
+        <div className="border rounded-lg overflow-hidden">
+          <Table className="min-w-fit">
+            <TableHeader>
+              <TableRow>
+                {props.headerRows.map((row, idx) => (
+                  <TableHead key={idx}>{row}</TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {props.portfolioData?.records.map((record, idx) => {
+                return (
+                  <TableRow key={idx}>
+                    <TableCell className="font-medium">
+                      {record.fields.name}
+                    </TableCell>
+                    <TableCell>{record.fields.symbol}</TableCell>
+                    <TableCell>{record.fields.quantity}</TableCell>
+                    <TableCell className="text-right">
+                      {currencyFormatter(getCurrentPrice(idx))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {currencyFormatter(
+                        portfolioValCalculator(
+                          record.fields.quantity,
+                          getCurrentPrice(idx)
+                        )
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {calculateGain(
+                        portfolioValCalculator(
+                          record.fields.quantity,
+                          getCurrentPrice(idx)
+                        ),
+                        record.fields.purchase_price
+                      ) > 0 ? (
+                        <Badge
+                          variant="outline"
+                          className="bg-green-500 text-green-50"
+                        >
+                          {formatGain(
+                            calculateGain(
+                              portfolioValCalculator(
+                                record.fields.quantity,
+                                getCurrentPrice(idx)
+                              ),
+                              record.fields.purchase_price
+                            )
+                          )}
+                        </Badge>
+                      ) : (
+                        <Badge
+                          variant="outline"
+                          className="bg-red-500 text-red-50"
+                        >
+                          {formatGain(
+                            calculateGain(
+                              portfolioValCalculator(
+                                record.fields.quantity,
+                                getCurrentPrice(idx)
+                              ),
+                              record.fields.purchase_price
+                            )
+                          )}
+                        </Badge>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
 
-        {props.dataType === "stocks" &&
-          console.log(JSON.stringify(props.currentPrice))}
+          {/* {props.dataType === "stocks" &&
+            console.log(JSON.stringify(props.currentPrice))} */}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
-const hello = [
+const sampleData = [
   {
     c: 195.75,
     d: 5.8,
