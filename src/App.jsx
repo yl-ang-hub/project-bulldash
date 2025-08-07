@@ -1,7 +1,5 @@
 import { Suspense } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { bitcoin60dChartSGD } from "./data/bitcoin60dChart";
-import { getDate } from "./services/DatetimeService";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import Portfolio from "./components/portfolio/Portfolio";
 import Watchlist from "./components/watchlist/Watchlist";
@@ -11,17 +9,6 @@ import { LoadingSpinner } from "./components/ui/LoadingSpinner";
 
 function App() {
   const queryClient = useQueryClient();
-
-  const parseEpochData = () => {
-    bitcoin60dChartSGD.prices.forEach((datum) =>
-      console.log(datum[0], getDate(datum[0]), datum[1])
-    );
-  };
-
-  // API CALLS - Coin Gecko
-
-  // Get coin listing on CoinGecko
-  // const qCoinListing = useQuery(fullCoinListingQueryOptions());
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
