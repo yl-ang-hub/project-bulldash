@@ -26,9 +26,7 @@ const News = () => {
     if (!res.ok) {
       throw new Error("Request error");
     }
-    console.log(res);
     const data = await res.json();
-    console.log(JSON.stringify(data));
     return data;
   };
 

@@ -151,7 +151,6 @@ const PortfolioCoinModal = (props) => {
   });
 
   const handleEdit = (id) => {
-    console.log(JSON.stringify(onEdit));
     const newState = { ...onEdit };
     newState[id] = true;
     setOnEdit(newState);

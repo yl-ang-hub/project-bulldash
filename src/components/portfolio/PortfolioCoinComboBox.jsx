@@ -50,7 +50,6 @@ export function PortfolioCoinComboBox(props) {
                   key={idx}
                   value={coin.name}
                   onSelect={(currVal) => {
-                    console.log(coin.id, coin.name, coin.symbol);
                     props.showSymbolFn(coin.id, coin.name, coin.symbol);
                     props.setDropdownValue(
                       currVal === props.dropdownValue ? "" : currVal

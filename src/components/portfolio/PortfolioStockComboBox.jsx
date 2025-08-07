@@ -27,7 +27,6 @@ export function PortfolioStockComboBox(props) {
   const qSymbol = useQuery({
     queryKey: ["qSymbol", props.dropdownValue],
     queryFn: async () => {
-      console.log(`fetchSymbolLookup running with ${props.dropdownValue}`);
       const res = await fetch(
         `${import.meta.env.VITE_FINNHUB_API}/search?q=${props.dropdownValue}&exchange=US&token=${import.meta.env.VITE_FINNHUB_APIKEY}`,
         {
@@ -40,9 +39,7 @@ export function PortfolioStockComboBox(props) {
       if (!res.ok) {
         throw new Error("Request error");
       }
-      console.log(res);
       const data = await res.json();
-      console.log(JSON.stringify(data));
       return data;
     },
     retry: 0,
@@ -80,11 +77,6 @@ export function PortfolioStockComboBox(props) {
                     key={idx}
                     value={result.description}
                     onSelect={(currVal) => {
-                      console.log(
-                        result.description,
-                        result.displaySymbol,
-                        result.symbol
-                      );
                       props.showSymbolFn(
                         result.symbol,
                         result.description,

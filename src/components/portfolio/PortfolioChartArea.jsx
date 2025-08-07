@@ -28,11 +28,8 @@ export function PortfolioChartArea(props) {
   const queryClient = useQueryClient();
   const [timeRange, setTimeRange] = useState("90d");
 
-  console.log(props.isCoin, props.isStock);
-
   // COIN: API call to get data for charting
   const fetchCoinChartData = async (idTicker) => {
-    console.log("Running fetchCoinChartData");
     const res = await fetch(
       `${import.meta.env.VITE_COINGECKO}coins/${idTicker}/market_chart?vs_currency=usd&days=90&interval=daily&precision=3`,
       {
@@ -46,9 +43,8 @@ export function PortfolioChartArea(props) {
       throw new Error("Request error");
     }
     const data = await res.json();
-    // console.log(JSON.stringify(data));
+
     const chartData = data.prices.map((point) => {
-      // console.log(point);
       const dateObj = new Date(point[0]);
       const formattedDate = dateObj.toISOString().split("T")[0];
       return { date: formattedDate, price: point[1] };
@@ -65,7 +61,6 @@ export function PortfolioChartArea(props) {
 
   // STOCK: API call to get data for charting
   const fetchStockChartData = async () => {
-    console.log("Running qStockChartData");
     const res = await fetch(
       `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${props.idTicker}&apikey=${import.meta.env.VITE_ALPHAVANTAGE_APIKEY}`
     );
@@ -73,16 +68,13 @@ export function PortfolioChartArea(props) {
       throw new Error("Request error");
     }
     const data = await res.json();
-    console.log(JSON.stringify(data));
     const chartData = [];
     for (const [key, value] of Object.entries(data["Time Series (Daily)"])) {
-      console.log(`Running ${key} and ${value}`);
       chartData.push({
         date: key,
         price: parseFloat(value["4. close"]),
       });
     }
-    console.log(JSON.stringify(chartData));
     return chartData;
   };
   const qStockChartData = useQuery({

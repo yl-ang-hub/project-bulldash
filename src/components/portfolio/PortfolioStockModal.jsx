@@ -66,7 +66,7 @@ export const PortfolioStockModal = (props) => {
     },
     retry: 0,
     onError: (error) => {
-      console.log("error has occurred", error.message);
+      console.error("error has occurred", error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["readStocksFromPortfolioDB"]);
@@ -97,7 +97,7 @@ export const PortfolioStockModal = (props) => {
     },
     retry: 0,
     onError: (error) => {
-      console.log("Request error - ", error.message);
+      console.error("Request error - ", error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["readStocksFromPortfolioDB"]);
@@ -128,17 +128,14 @@ export const PortfolioStockModal = (props) => {
       if (!res.ok) {
         throw new Error("Request error - coin not updated");
       }
-      console.log(JSON.stringify(res));
       const data = await res.json();
-      console.log(JSON.stringify(data));
       return data;
     },
     retry: 0,
     onError: (error) => {
-      console.log("error has occurred", error.message);
+      console.error("error has occurred", error.message);
     },
     onSuccess: async () => {
-      console.log("add stock is successful, callback running");
       await queryClient.invalidateQueries(["readStocksFromPortfolioDB"]);
       await queryClient.invalidateQueries(["qQuote"]);
       setNewQty("0");
@@ -151,7 +148,6 @@ export const PortfolioStockModal = (props) => {
   });
 
   const handleEdit = (id) => {
-    console.log(JSON.stringify(onEdit));
     const newState = { ...onEdit };
     newState[id] = true;
     setOnEdit(newState);

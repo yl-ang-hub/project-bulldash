@@ -14,7 +14,6 @@ export const PortfolioStockWatchCard = (props) => {
   const queryClient = useQueryClient();
 
   const getCurrentPrice = (idx) => {
-    // console.log(JSON.stringify(props.currentPrice));
     const result = props.currentPrice.at(idx)?.c;
     if (!result) {
       return 0;
@@ -136,9 +135,6 @@ export const PortfolioStockWatchCard = (props) => {
               })}
             </TableBody>
           </Table>
-
-          {/* {props.dataType === "stocks" &&
-            console.log(JSON.stringify(props.currentPrice))} */}
         </div>
       </div>
     </>

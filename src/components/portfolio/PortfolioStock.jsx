@@ -21,7 +21,6 @@ const PortfolioStock = () => {
   });
 
   const fetchStockQuote = async (ticker) => {
-    console.log("fetchStockQuote is running");
     const res = await fetch(
       import.meta.env.VITE_FINNHUB_API +
         "/quote?symbol=" +

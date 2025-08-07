@@ -50,9 +50,6 @@ const PortfolioWatchCard = (props) => {
     }
   };
 
-  // console.log(props.portfolioData);
-  // console.log(props.currentPrice);
-
   return (
     <div className="w-[760px] my-8 mx-auto py-8 px-4 md:px-6 border rounded">
       <div className="flex items-center justify-between mb-6">
