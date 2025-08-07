@@ -49,11 +49,9 @@ export const PortfolioStockWatchCard = (props) => {
 
   return (
     <>
-      <div className="w-[760px] my-8 mt-12 mx-auto py-8 px-4 md:px-6 border rounded">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-bold text-blue-600 dark:text-white">
-            {props.children}
-          </h2>
+      <div className="w-[760px] my-8 mt-12 mx-auto py-8 px-4 md:px-6 border rounded-lg shadow-md transition-all ease-in-out duration-300 hover:shadow-lg">
+        <div className="flex items-center justify-between mb-6 text-3xl font-bold text-blue-600 dark:text-white">
+          {props.children}
           <PortfolioStockModal
             dataType={props.dataType}
             headerRows={props.headerRows}

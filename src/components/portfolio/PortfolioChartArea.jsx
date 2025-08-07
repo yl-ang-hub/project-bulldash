@@ -135,7 +135,7 @@ export function PortfolioChartArea(props) {
   };
 
   return (
-    <Card className="pt-0 mb-20">
+    <Card className="pt-0 mb-20 rounded-lg shadow-md transition-all ease-in-out duration-300 hover:shadow-lg">
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center pl-32">
           <CardTitle class="text-1xl font-bold text-blue-600 dark:text-white">

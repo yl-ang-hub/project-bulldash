@@ -68,7 +68,7 @@ const PortfolioCoinModal = (props) => {
     },
     retry: 0,
     onError: (error) => {
-      console.log("error has occurred", error.message);
+      console.error("error has occurred", error.message);
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
@@ -100,7 +100,7 @@ const PortfolioCoinModal = (props) => {
     },
     retry: 0,
     onError: (error) => {
-      console.log("Request error - ", error.message);
+      console.error("Request error - ", error.message);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
@@ -135,10 +135,10 @@ const PortfolioCoinModal = (props) => {
     },
     retry: 0,
     onError: (error) => {
-      console.log("error has occurred", error.message);
+      console.error("error has occurred", error.message);
     },
     onSuccess: async () => {
-      console.log("add coin is successful, callback running");
+      console.error("add coin is successful, callback running");
       await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
       await queryClient.invalidateQueries(["qQuote"]);
       setNewQty("0");

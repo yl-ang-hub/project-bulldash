@@ -36,7 +36,7 @@ const PortfolioCoin = () => {
 
         return data;
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     },
     retry: 0,
