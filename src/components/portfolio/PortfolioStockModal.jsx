@@ -26,7 +26,6 @@ import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 export const PortfolioStockModal = (props) => {
   const queryClient = useQueryClient();
-  // TODO: IMPLEMENT SEARCH
   const [onEdit, setOnEdit] = useState({});
   const [symbolOnAdd, setSymbolOnAdd] = useState("");
   const [nameOnAdd, setNameOnAdd] = useState("");
@@ -305,18 +304,18 @@ export const PortfolioStockModal = (props) => {
                         </TableCell>
                         <TableCell>{symbolOnAdd}</TableCell>
                         <TableCell className="text-right min-w-[100px] justify-end">
-                          {/* TODO: Validate that it is Float */}
                           <Input
                             className="min-w-[100px] pr-0 text-right"
-                            defaultValue={newQty.current}
+                            type="number"
+                            value={newQty}
                             onChange={(event) => setNewQty(event.target.value)}
                           />
                         </TableCell>
                         <TableCell className="text-right min-w-[100px] justify-end">
-                          {/* TODO: Validate that it is Float */}
                           <Input
                             className="min-w-[100px] pr-0 text-right"
-                            defaultValue={newPurchasePrice.current}
+                            type="number"
+                            value={newPurchasePrice}
                             onChange={(event) =>
                               setNewPurchasePrice(event.target.value)
                             }
@@ -326,13 +325,6 @@ export const PortfolioStockModal = (props) => {
                           <Button
                             className="rounded max-w-[70px]"
                             onClick={() => {
-                              console.log(
-                                idTickerOnAdd,
-                                nameOnAdd,
-                                symbolOnAdd,
-                                newQty,
-                                newPurchasePrice
-                              );
                               addAssetInPortfolioDB.mutate({
                                 id: idTickerOnAdd,
                                 name: nameOnAdd,
