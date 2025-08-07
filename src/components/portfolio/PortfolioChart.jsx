@@ -54,7 +54,7 @@ const PortfolioChart = () => {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <div>
+      <div className="w-[760px] justify-self-center">
         {/* <p>{coinPortfolio ? JSON.stringify(coinPortfolio) : ""}</p>
         <p>
           {coinPortfolio ? getFormattedCoinChartData() : "Didn't run formatter"}
@@ -89,7 +89,7 @@ const PortfolioChart = () => {
           </SelectContent>
         </Select>
       </div>
-      <div>
+      <div className="w-[760px] justify-self-center">
         <PortfolioChartArea
           idTicker={selectId}
           isCoin={coinIds.includes(selectId)}

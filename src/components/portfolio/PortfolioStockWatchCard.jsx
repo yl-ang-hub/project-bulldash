@@ -50,7 +50,7 @@ export const PortfolioStockWatchCard = (props) => {
 
   return (
     <>
-      <div className="w-[800px] my-8 mt-12 mx-auto py-8 px-4 md:px-6 border rounded">
+      <div className="w-[760px] my-8 mt-12 mx-auto py-8 px-4 md:px-6 border rounded">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-1xl font-bold">{props.children}</h2>
           <PortfolioStockModal
@@ -62,16 +62,19 @@ export const PortfolioStockWatchCard = (props) => {
           <Table className="min-w-fit">
             <TableHeader>
               <TableRow>
-                {props.headerRows.map((row, idx) => (
-                  <TableHead key={idx}>{row}</TableHead>
-                ))}
+                <TableHead className="!text-left">Name</TableHead>
+                <TableHead>Symbol</TableHead>
+                <TableHead>Quantity</TableHead>
+                <TableHead className="!text-right">Price</TableHead>
+                <TableHead className="!text-right">Portfolio Value</TableHead>
+                <TableHead className="!text-right">Gain</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {props.portfolioData?.records.map((record, idx) => {
                 return (
                   <TableRow key={idx}>
-                    <TableCell className="font-medium">
+                    <TableCell className="text-left font-medium">
                       {record.fields.name}
                     </TableCell>
                     <TableCell>{record.fields.symbol}</TableCell>

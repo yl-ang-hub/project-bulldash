@@ -46,7 +46,7 @@ const News = () => {
     <div className="container max-w-full mx-auto my-8 text-left">
       <div className="container my-10" id="top-news">
         <div>
-          <h1 className="text-center">Top News</h1>
+          <h1 className="text-center !text-blue-400">Top News</h1>
         </div>
         <Suspense fallback={<LoadingSpinner />}>
           <div className="container">
@@ -74,7 +74,7 @@ const News = () => {
       </div>
       <div className="container my-10" id="crypto-news">
         <div>
-          <h1 className="text-center">Top Crypto News</h1>
+          <h1 className="text-center !text-blue-400">Top Crypto News</h1>
         </div>
         <Suspense fallback={<LoadingSpinner />}>
           <div className="container">
