@@ -33,8 +33,8 @@ export const PortfolioStockModal = (props) => {
   const [idTickerOnAdd, setIdTickerOnAdd] = useState("");
   const qtyRefs = useRef([]);
   const purchasePriceRefs = useRef([]);
-  const newQty = useRef(0);
-  const newPurchasePrice = useRef(0);
+  const [newQty, setNewQty] = useState("0");
+  const [newPurchasePrice, setNewPurchasePrice] = useState("0");
   const [dropdownValue, setDropdownValue] = useState("");
 
   // Get portfolio data
@@ -104,7 +104,6 @@ export const PortfolioStockModal = (props) => {
     },
   });
 
-  // ISSUE: Does not re-render WatchCard & ComboBox components
   const addAssetInPortfolioDB = useMutation({
     mutationFn: async ({ id, symbol, name, qty, price }) => {
       const res = await fetch(
@@ -120,8 +119,8 @@ export const PortfolioStockModal = (props) => {
               idTicker: id,
               symbol: symbol,
               name: name,
-              quantity: qty,
-              purchase_price: price,
+              quantity: parseFloat(qty),
+              purchase_price: parseFloat(price),
             },
           }),
         }
@@ -129,7 +128,10 @@ export const PortfolioStockModal = (props) => {
       if (!res.ok) {
         throw new Error("Request error - coin not updated");
       }
-      return await res.json();
+      console.log(JSON.stringify(res));
+      const data = await res.json();
+      console.log(JSON.stringify(data));
+      return data;
     },
     retry: 0,
     onError: (error) => {
@@ -139,10 +141,8 @@ export const PortfolioStockModal = (props) => {
       console.log("add stock is successful, callback running");
       await queryClient.invalidateQueries(["readStocksFromPortfolioDB"]);
       await queryClient.invalidateQueries(["qQuote"]);
-      // ISSUE: No re-render of component + child despite state change or query invalidation
-      // ComboBox & useRefs not cleared & price/quantity not updated in WatchCard
-      newQty.current = 0;
-      newPurchasePrice.current = 0;
+      setNewQty("0");
+      setNewPurchasePrice("0");
       setIdTickerOnAdd("");
       setNameOnAdd("");
       setSymbolOnAdd("");
@@ -309,9 +309,7 @@ export const PortfolioStockModal = (props) => {
                           <Input
                             className="min-w-[100px] pr-0 text-right"
                             defaultValue={newQty.current}
-                            onChange={(event) =>
-                              (newQty.current = parseFloat(event.target.value))
-                            }
+                            onChange={(event) => setNewQty(event.target.value)}
                           />
                         </TableCell>
                         <TableCell className="text-right min-w-[100px] justify-end">
@@ -320,9 +318,7 @@ export const PortfolioStockModal = (props) => {
                             className="min-w-[100px] pr-0 text-right"
                             defaultValue={newPurchasePrice.current}
                             onChange={(event) =>
-                              (newPurchasePrice.current = parseFloat(
-                                event.target.value
-                              ))
+                              setNewPurchasePrice(event.target.value)
                             }
                           />
                         </TableCell>
@@ -334,15 +330,15 @@ export const PortfolioStockModal = (props) => {
                                 idTickerOnAdd,
                                 nameOnAdd,
                                 symbolOnAdd,
-                                newQty.current,
-                                newPurchasePrice.current
+                                newQty,
+                                newPurchasePrice
                               );
                               addAssetInPortfolioDB.mutate({
                                 id: idTickerOnAdd,
                                 name: nameOnAdd,
                                 symbol: symbolOnAdd,
-                                qty: newQty.current,
-                                price: newPurchasePrice.current,
+                                qty: newQty,
+                                price: newPurchasePrice,
                               });
                             }}
                           >

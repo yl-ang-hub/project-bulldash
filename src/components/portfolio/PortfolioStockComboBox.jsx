@@ -24,13 +24,12 @@ export function PortfolioStockComboBox(props) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  // ISSUE: API returns html response, not JSON (but Postman gets JSON)
   const qSymbol = useQuery({
     queryKey: ["qSymbol", props.dropdownValue],
     queryFn: async () => {
       console.log(`fetchSymbolLookup running with ${props.dropdownValue}`);
       const res = await fetch(
-        `${import.meta.env.VITE_FINNHUB_API}search?q=${props.dropdownValue}&exchange=US&token=${import.meta.env.VITE_FINNHUB_APIKEY}`,
+        `${import.meta.env.VITE_FINNHUB_API}/search?q=${props.dropdownValue}&exchange=US&token=${import.meta.env.VITE_FINNHUB_APIKEY}`,
         {
           method: "GET",
           headers: {
@@ -49,12 +48,6 @@ export function PortfolioStockComboBox(props) {
     retry: 0,
     staleTime: Infinity,
   });
-
-  // const handleSearch = (value) => {
-  //   console.log(props.dropdownValue);
-  //   props.setDropdownValue(value);
-  //   console.log(props.dropdownValue);
-  // };
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -81,43 +74,39 @@ export function PortfolioStockComboBox(props) {
           <CommandList>
             <CommandEmpty>Stock not found.</CommandEmpty>
             <CommandGroup>
-              {props.dropdownValue ? (
-                <p>{JSON.stringify(qSymbol.data)}</p>
-              ) : (
-                // qSymbol.data.result.map((result, idx) => (
-                //     <CommandItem
-                //       key={idx}
-                //       value={result.description}
-                //       onSelect={(currVal) => {
-                //         console.log(
-                //           result.description,
-                //           result.displaySymbol,
-                //           result.symbol
-                //         );
-                //         props.showSymbolFn(
-                //           result.symbol,
-                //           result.description,
-                //           result.symbol
-                //         );
-                //         props.setDropdownValue(
-                //           currVal === props.dropdownValue ? "" : currVal
-                //         );
-                //         setOpen(false);
-                //       }}
-                //     >
-                //       {result.description}
-                //       <Check
-                //         className={cn(
-                //           "ml-auto",
-                //           props.dropdownValue === result.symbol
-                //             ? "opacity-100"
-                //             : "opacity-0"
-                //         )}
-                //       />
-                //     </CommandItem>
-                //   ))
-                ""
-              )}
+              {qSymbol.isSuccess &&
+                qSymbol?.data.result.map((result, idx) => (
+                  <CommandItem
+                    key={idx}
+                    value={result.description}
+                    onSelect={(currVal) => {
+                      console.log(
+                        result.description,
+                        result.displaySymbol,
+                        result.symbol
+                      );
+                      props.showSymbolFn(
+                        result.symbol,
+                        result.description,
+                        result.symbol
+                      );
+                      props.setDropdownValue(
+                        currVal === props.dropdownValue ? "" : currVal
+                      );
+                      setOpen(false);
+                    }}
+                  >
+                    {result.description}
+                    <Check
+                      className={cn(
+                        "ml-auto",
+                        props.dropdownValue === result.symbol
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                  </CommandItem>
+                ))}
             </CommandGroup>
           </CommandList>
         </Command>
