@@ -17,7 +17,7 @@ const PortfolioStock = () => {
   const qStocksFromPortfolioDB = useSuspenseQuery({
     queryKey: ["readStocksFromPortfolioDB"],
     queryFn: () => readDB("StocksPortfolioDB?maxRecords=100&view=Grid%20view"),
-    retry: 1,
+    retry: 0,
   });
 
   const fetchStockQuote = async (ticker) => {

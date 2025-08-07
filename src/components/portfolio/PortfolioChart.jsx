@@ -15,46 +15,42 @@ import {
   useSuspenseQuery,
 } from "@tanstack/react-query";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { readDB } from "@/services/DBApiService";
 
 const PortfolioChart = () => {
   const queryClient = useQueryClient();
+  // COIN: get portfolio data from cache
+  const [coinIds, setCoinIds] = useState([]);
+  const [stockIds, setStockIds] = useState([]);
+  const [assetIds, setAssetIds] = useState([]);
+  const [selectId, setSelectId] = useState("");
 
   const qCoinsFromPortfolioDB = useSuspenseQuery({
     queryKey: ["readCoinsFromPortfolioDB"],
-    queryFn: async () => {
-      try {
-        const res = await fetch(
-          import.meta.env.VITE_AIRTABLE_API +
-            "CoinsPortfolioDB?maxRecords=100&view=Grid%20view",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + import.meta.env.VITE_AIRTABLE_TOKEN,
-            },
-          }
-        );
-        const data = await res.json();
-        // console.log(JSON.stringify(data));
-        return data;
-      } catch (err) {
-        console.log(err);
-      }
-    },
+    queryFn: () => readDB("CoinsPortfolioDB?maxRecords=100&view=Grid%20view"),
     retry: 0,
   });
 
-  // COIN: get portfolio data from cache
-  const [coinIds, setCoinIds] = useState([]);
-  const [selectCoinId, setSelectCoinId] = useState("");
+  const qStocksFromPortfolioDB = useSuspenseQuery({
+    queryKey: ["readStocksFromPortfolioDB"],
+    queryFn: () => readDB("StocksPortfolioDB?maxRecords=100&view=Grid%20view"),
+    retry: 0,
+  });
 
   useEffect(() => {
-    const idTickerArray = qCoinsFromPortfolioDB.data?.records.map(
+    const coinIdTickerArray = qCoinsFromPortfolioDB.data?.records.map(
       (data) => data.fields.idTicker
     );
-    setCoinIds(idTickerArray);
-    setSelectCoinId(idTickerArray[0]);
-  }, [qCoinsFromPortfolioDB.data]);
+    setCoinIds(coinIdTickerArray);
+    const stockIdTickerArray = qStocksFromPortfolioDB.data?.records.map(
+      (data) => data.fields.idTicker
+    );
+    setStockIds(stockIdTickerArray);
+    const idTickerArray = [...coinIdTickerArray];
+    stockIdTickerArray.forEach((id) => idTickerArray.push(id));
+    setAssetIds(idTickerArray);
+    setSelectId(idTickerArray[0]);
+  }, [qCoinsFromPortfolioDB.data, qStocksFromPortfolioDB.data]);
 
   // useEffect(() => {
   //   queryClient.invalidateQueries(["qCoinsUSDChartData"]);
@@ -69,21 +65,27 @@ const PortfolioChart = () => {
         </p> */}
         <Select
           className="rounded"
-          value={selectCoinId}
-          onValueChange={setSelectCoinId}
+          value={selectId}
+          onValueChange={setSelectId}
         >
           <SelectTrigger className="w-[180px] rounded">
-            <SelectValue placeholder="Select an asset">
-              {selectCoinId}
-            </SelectValue>
+            <SelectValue placeholder="Select an asset">{selectId}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Coins</SelectLabel>
-              {coinIds?.map((coin, idx) => {
+              {coinIds?.map((asset, idx) => {
                 return (
-                  <SelectItem key={idx} value={coin}>
-                    {coin}
+                  <SelectItem key={idx} value={asset}>
+                    {asset}
+                  </SelectItem>
+                );
+              })}
+              <SelectLabel>Stocks</SelectLabel>
+              {stockIds?.map((asset, idx) => {
+                return (
+                  <SelectItem key={idx} value={asset}>
+                    {asset}
                   </SelectItem>
                 );
               })}
@@ -92,7 +94,11 @@ const PortfolioChart = () => {
         </Select>
       </div>
       <div>
-        <PortfolioChartArea idTicker={selectCoinId} />
+        <PortfolioChartArea
+          idTicker={selectId}
+          isCoin={coinIds.includes(selectId)}
+          isStock={stockIds.includes(selectId)}
+        />
       </div>
     </Suspense>
   );

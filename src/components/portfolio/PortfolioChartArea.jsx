@@ -24,107 +24,122 @@ import {
 } from "@/components/ui/select";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-export const description = "An interactive area chart";
-
-// COIN: API call to get data for charting
-const fetchCoinChartData = async (idTicker) => {
-  console.log("Running fetchCoinChartData");
-  const res = await fetch(
-    `${import.meta.env.VITE_COINGECKO}coins/${idTicker}/market_chart?vs_currency=usd&days=90&interval=daily&precision=3`,
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-      },
-    }
-  );
-  if (!res.ok) {
-    throw new Error("Request error");
-  }
-  const data = await res.json();
-  // console.log(JSON.stringify(data));
-  const chartData = data.prices.map((point) => {
-    // console.log(point);
-    const dateObj = new Date(point[0]);
-    const formattedDate = dateObj.toISOString().split("T")[0];
-    return { date: formattedDate, price: point[1] };
-  });
-  return chartData;
-};
-
-// // STOCK: get portfolio data from cache
-// const stockPortfolio = queryClient.getQueryData([
-//   "readStocksFromPortfolioDB",
-// ]);
-// // STOCK: API call to get data for charting
-// const fetchStockChartData = async (symbol) => {
-//   console.log("Running fetchStockChartData");
-//   const res = await fetch(
-//     `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&apikey=demo`
-//   );
-//   if (!res.ok) {
-//     throw new Error("Request error");
-//   }
-//   const data = await res.json();
-//   const chartData = {};
-//   for (const [key, value] of Object.entries(data["Time Series (Daily)"])) {
-//     chartData["date"] = key;
-//     chartData["price"] = value["4. close"];
-//   }
-//   return { symbol: chartData };
-// };
-
 export function PortfolioChartArea(props) {
   const queryClient = useQueryClient();
-  // const [displayedSymbol, setDisplayedSymbol] = useState("");
-  const [timeRange, setTimeRange] = React.useState("90d");
+  const [timeRange, setTimeRange] = useState("90d");
 
+  console.log(props.isCoin, props.isStock);
+
+  // COIN: API call to get data for charting
+  const fetchCoinChartData = async (idTicker) => {
+    console.log("Running fetchCoinChartData");
+    const res = await fetch(
+      `${import.meta.env.VITE_COINGECKO}coins/${idTicker}/market_chart?vs_currency=usd&days=90&interval=daily&precision=3`,
+      {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+        },
+      }
+    );
+    if (!res.ok) {
+      throw new Error("Request error");
+    }
+    const data = await res.json();
+    // console.log(JSON.stringify(data));
+    const chartData = data.prices.map((point) => {
+      // console.log(point);
+      const dateObj = new Date(point[0]);
+      const formattedDate = dateObj.toISOString().split("T")[0];
+      return { date: formattedDate, price: point[1] };
+    });
+    return chartData;
+  };
   const qCoinChartData = useQuery({
     queryKey: ["qCoinsUSDChartData", props.idTicker],
     queryFn: () => fetchCoinChartData(props.idTicker),
     retry: 0,
     staleTime: Infinity,
+    enabled: props.isCoin,
   });
 
-  const filteredData = qCoinChartData.data?.filter((item) => {
-    // const filteredData = chartData.filter((item) => {
-    console.log(JSON.stringify(qCoinChartData.data));
-    const date = new Date(item.date);
-    const referenceDate = new Date("2025-08-07");
-    let daysToSubtract = 90;
-    if (timeRange === "30d") {
-      daysToSubtract = 30;
-    } else if (timeRange === "7d") {
-      daysToSubtract = 7;
+  // STOCK: get portfolio data from cache
+  const stockPortfolio = queryClient.getQueryData([
+    "readStocksFromPortfolioDB",
+  ]);
+  // STOCK: API call to get data for charting
+  const fetchStockChartData = async () => {
+    console.log("Running qStockChartData");
+    const res = await fetch(
+      `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${props.idTicker}&apikey=${import.meta.env.VITE_ALPHAVANTAGE_APIKEY}`
+    );
+    if (!res.ok) {
+      throw new Error("Request error");
     }
-    const startDate = new Date(referenceDate);
-    startDate.setDate(startDate.getDate() - daysToSubtract);
-
-    return date >= startDate;
+    const data = await res.json();
+    console.log(JSON.stringify(data));
+    const chartData = [];
+    for (const [key, value] of Object.entries(data["Time Series (Daily)"])) {
+      console.log(`Running ${key} and ${value}`);
+      chartData.push({
+        date: key,
+        price: parseFloat(value["4. close"]),
+      });
+    }
+    console.log(JSON.stringify(chartData));
+    return chartData;
+  };
+  const qStockChartData = useQuery({
+    queryKey: ["qStocksUSDChartData", props.idTicker],
+    queryFn: () => fetchStockChartData(props.idTicker),
+    retry: 0,
+    staleTime: Infinity,
+    enabled: props.isStock,
   });
 
-  const maxY = qCoinChartData.data?.reduce((acc, curr) => {
-    return Math.max(acc, curr.price * 1.05);
-  }, 0);
-  const minY = qCoinChartData.data?.reduce((acc, curr) => {
-    return Math.min(acc, curr.price * 0.95);
-  }, maxY);
-  console.log(minY);
-  console.log(maxY);
+  const chartFilter = (data) => {
+    return data.filter((item) => {
+      const date = new Date(item.date);
+      const referenceDate = new Date("2025-08-07");
+      let daysToSubtract = 90;
+      if (timeRange === "30d") {
+        daysToSubtract = 30;
+      } else if (timeRange === "7d") {
+        daysToSubtract = 7;
+      }
+      const startDate = new Date(referenceDate);
+      startDate.setDate(startDate.getDate() - daysToSubtract);
 
-  // useEffect(() => {
-  //   setDisplayedSymbol(props.idTicker);
-  //   queryClient.invalidateQueries(["qCoinsUSDChartData", props.idTicker]);
-  // }, [props.idTicker]);
+      return date >= startDate;
+    });
+  };
+
+  let filteredData = [],
+    minY = 0,
+    maxY = 0;
+  if (props.isCoin) {
+    if (qCoinChartData.data) {
+      filteredData = chartFilter(qCoinChartData?.data);
+      maxY = qCoinChartData.data?.reduce((acc, curr) => {
+        return Math.max(acc, curr.price * 1.05);
+      }, 0);
+      minY = qCoinChartData.data?.reduce((acc, curr) => {
+        return Math.min(acc, curr.price * 0.95);
+      }, maxY);
+    }
+  } else {
+    if (qStockChartData.data) {
+      filteredData = chartFilter(qStockChartData?.data);
+      maxY = qStockChartData.data?.reduce((acc, curr) => {
+        return Math.max(acc, curr.price * 1.05);
+      }, 0);
+      minY = qStockChartData.data?.reduce((acc, curr) => {
+        return Math.min(acc, curr.price * 0.95);
+      }, maxY);
+    }
+  }
 
   const chartConfig = {
-    // visitors: {
-    //   label: "Visitors",
-    // },
-    // price: {
-    //   label: "Price",
-    //   color: "var(--chart-1)",
-    // },
     price: {
       label: "Price (USD)",
       color: "var(--chart-5)",
