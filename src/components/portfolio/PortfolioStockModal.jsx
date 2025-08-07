@@ -23,6 +23,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PortfolioStockComboBox } from "./PortfolioStockComboBox";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
+import { ScrollBar } from "../ui/scroll-area";
 
 export const PortfolioStockModal = (props) => {
   const queryClient = useQueryClient();
@@ -188,25 +189,23 @@ export const PortfolioStockModal = (props) => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <div>
-        <Dialog className="w-[1200px] mx-auto py-4 px-4 md:px-6">
+        <Dialog className="mx-auto py-4 px-4 md:px-6">
           <form>
             <DialogTrigger asChild>
               <Button variant="default" className="rounded">
                 Add / Edit
               </Button>
             </DialogTrigger>
-            <DialogContent className="w-[1200px]">
+            <DialogContent className="min-w-[800px] h-[500px]">
               <DialogHeader>
                 <DialogTitle>Edit Portfolio</DialogTitle>
                 <DialogDescription>
                   Make changes to your portfolio here.
                 </DialogDescription>
               </DialogHeader>
-              <div className="border rounded-lg overflow-hidden">
-                <ScrollArea
-                  className="h-[360px] rounded-md border"
-                  orientation="both"
-                >
+              <div className="border rounded-lg overflow-scroll">
+                <ScrollArea className="rounded-md border">
+                  <ScrollBar orientation="vertical" />
                   <Table>
                     <TableHeader className="sticky top-0 bg-background z-10">
                       <TableRow>
