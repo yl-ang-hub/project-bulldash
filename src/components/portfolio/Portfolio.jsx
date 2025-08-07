@@ -3,9 +3,6 @@ import PortfolioCoin from "./PortfolioCoin";
 import PortfolioStock from "./PortfolioStock";
 import PortfolioChart from "./PortfolioChart";
 
-// Get 60 days price of a Coin for charting - ran once for btc
-// const qCoinChart = useQuery(qCoinUSDChartQueryOptions());
-
 const Portfolio = () => {
   const queryClient = useQueryClient();
 

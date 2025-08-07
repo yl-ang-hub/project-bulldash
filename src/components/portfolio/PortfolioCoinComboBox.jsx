@@ -22,7 +22,6 @@ import { fullCoinList } from "@/data/fullCoinListing";
 
 export function PortfolioCoinComboBox(props) {
   const [open, setOpen] = useState(false);
-  // const [value, setValue] = useState("");
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

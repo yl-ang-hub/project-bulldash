@@ -1,9 +1,5 @@
-import React, { useState } from "react";
-import {
-  useSuspenseQuery,
-  useQueryClient,
-  useQuery,
-} from "@tanstack/react-query";
+import React from "react";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { Suspense } from "react";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 const PortfolioCoinWatchCard = React.lazy(
