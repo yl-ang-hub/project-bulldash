@@ -13,19 +13,19 @@ function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <div className="container mx-auto mt-6 w-[500px] text-center">
-        <h1 className="bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+        <h1 className="mb-4 text-5xl font-extrabold dark:text-white md:text-5xl lg:text-6xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
           BULLDASH
         </h1>
         <div>
           <Tabs defaultValue="portfolio" className="block my-6">
-            <TabsList className="">
+            <TabsList className="text-center text-4xl font-bold">
               <TabsTrigger
                 value="portfolio"
                 className="px-4 py-3 border-none rounded  hover:bg-gray-50"
               >
                 <NavLink
                   to="/portfolio"
-                  className="text-black font-normal !no-underline"
+                  className="!no-underline text-1xl font-bold dark:text-blue-200"
                 >
                   Portfolio
                 </NavLink>
@@ -37,7 +37,7 @@ function App() {
               >
                 <NavLink
                   to="/market"
-                  className="text-black font-normal !no-underline"
+                  className="!no-underline text-1xl font-bold dark:text-blue-200"
                 >
                   Market
                 </NavLink>
@@ -48,7 +48,7 @@ function App() {
               >
                 <NavLink
                   to="/news"
-                  className="text-black font-normal !no-underline"
+                  className="!no-underline text-1xl font-bold dark:text-blue-200"
                 >
                   News
                 </NavLink>

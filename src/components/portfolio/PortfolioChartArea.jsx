@@ -146,7 +146,9 @@ export function PortfolioChartArea(props) {
     <Card className="pt-0 mb-20">
       <CardHeader className="flex items-center gap-2 space-y-0 py-5 sm:flex-row">
         <div className="grid flex-1 gap-1 text-center pl-32">
-          <CardTitle>Area Chart for {props.idTicker} - Interactive</CardTitle>
+          <CardTitle class="text-1xl font-bold text-blue-600 dark:text-white">
+            Area Chart for {props.idTicker} - Interactive
+          </CardTitle>
           <CardDescription>Showing price for the last 3 months</CardDescription>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>

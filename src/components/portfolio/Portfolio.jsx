@@ -7,12 +7,12 @@ const Portfolio = () => {
   const queryClient = useQueryClient();
 
   return (
-    <div className="container">
-      <div className="container">
+    <div className="h-screen grid grid-cols-1 place-items-center">
+      <div>
         <PortfolioCoin />
         <PortfolioStock />
       </div>
-      <div className="container">
+      <div>
         <PortfolioChart />
       </div>
     </div>

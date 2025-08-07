@@ -64,7 +64,7 @@ const PortfolioChart = () => {
           value={selectId}
           onValueChange={setSelectId}
         >
-          <SelectTrigger className="w-[180px] rounded">
+          <SelectTrigger className="w-[180px] rounded-lg">
             <SelectValue placeholder="Select an asset">{selectId}</SelectValue>
           </SelectTrigger>
           <SelectContent>

@@ -75,7 +75,7 @@ const PortfolioCoin = () => {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <div className="block">
+      <div>
         {qCoinsFromPortfolioDB.isSuccess && (
           <PortfolioCoinWatchCard
             dataType="coin"

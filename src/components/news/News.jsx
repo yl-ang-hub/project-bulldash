@@ -43,10 +43,12 @@ const News = () => {
   });
 
   return (
-    <div className="container max-w-full mx-auto my-8 text-left">
-      <div className="container my-10" id="top-news">
+    <div className="h-screen grid grid-cols-1 place-items-center max-w-full mx-auto my-8 text-left">
+      <div id="top-news">
         <div>
-          <h1 className="text-center !text-blue-400">Top News</h1>
+          <h1 className="my-10 text-center text-4xl font-bold text-blue-400 dark:text-white">
+            Top News
+          </h1>
         </div>
         <Suspense fallback={<LoadingSpinner />}>
           <div className="container">
@@ -72,9 +74,11 @@ const News = () => {
           </div>
         </Suspense>
       </div>
-      <div className="container my-10" id="crypto-news">
+      <div id="crypto-news">
         <div>
-          <h1 className="text-center !text-blue-400">Top Crypto News</h1>
+          <div className="my-10 text-center text-4xl font-bold text-blue-400 dark:text-white">
+            Top Crypto News
+          </div>
         </div>
         <Suspense fallback={<LoadingSpinner />}>
           <div className="container">
