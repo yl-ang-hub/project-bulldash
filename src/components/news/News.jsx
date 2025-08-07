@@ -21,7 +21,7 @@ const News = () => {
 
   const fetchNewsData = async (category) => {
     const res = await fetch(
-      `${import.meta.env.VITE_FINNHUB_API}/news?category=${category}&token=${import.meta.env.VITE_FINNHUB_APIKEY}`
+      `${import.meta.env.VITE_FINNHUB_APIURL}/news?category=${category}&token=${import.meta.env.VITE_FINNHUB_APIKEY}`
     );
     if (!res.ok) {
       throw new Error("Request error");

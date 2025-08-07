@@ -33,10 +33,10 @@ const MarketCoin = () => {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <div className="block">
+      <div>
         {qCoinsTrending.isSuccess && (
           <MarketCoinWatchCard dataType="coin" trendData={qCoinsTrending?.data}>
-            Trending Coins
+            Coins - Trending
           </MarketCoinWatchCard>
         )}
       </div>

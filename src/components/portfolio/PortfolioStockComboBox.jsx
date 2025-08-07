@@ -28,7 +28,7 @@ export function PortfolioStockComboBox(props) {
     queryKey: ["qSymbol", props.dropdownValue],
     queryFn: async () => {
       const res = await fetch(
-        `${import.meta.env.VITE_FINNHUB_API}/search?q=${props.dropdownValue}&exchange=US&token=${import.meta.env.VITE_FINNHUB_APIKEY}`,
+        `${import.meta.env.VITE_FINNHUB_APIURL}/search?q=${props.dropdownValue}&exchange=US&token=${import.meta.env.VITE_FINNHUB_APIKEY}`,
         {
           method: "GET",
           headers: {

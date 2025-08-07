@@ -22,7 +22,7 @@ const PortfolioStock = () => {
 
   const fetchStockQuote = async (ticker) => {
     const res = await fetch(
-      import.meta.env.VITE_FINNHUB_API +
+      import.meta.env.VITE_FINNHUB_APIURL +
         "/quote?symbol=" +
         ticker +
         "&token=" +

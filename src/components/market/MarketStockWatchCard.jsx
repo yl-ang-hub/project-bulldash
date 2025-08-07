@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Table,
   TableHeader,
@@ -7,11 +8,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "../ui/badge";
-// import { useQueryClient } from "@tanstack/react-query";
 
-const MarketCoinWatchCard = (props) => {
-  // const queryClient = useQueryClient();
-
+const MarketStockWatchCard = (props) => {
   const currencyFormatter = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -43,42 +41,46 @@ const MarketCoinWatchCard = (props) => {
               <TableHead className="!text-left">Name</TableHead>
               <TableHead className="!text-center">Symbol</TableHead>
               <TableHead className="!text-right">Price (USD)</TableHead>
+              <TableHead className="!text-right">Change (USD)</TableHead>
               <TableHead className="!text-right">Gain</TableHead>
+              <TableHead className="!text-right">Volume</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {props.trendData?.map((record, idx) => {
+            {props.stocksMoversData?.map((record, idx) => {
               return (
                 <TableRow key={idx}>
                   <TableCell className="text-left font-medium">
-                    {record.item.name}
+                    {record.ticker}
                   </TableCell>
                   <TableCell className="text-center">
-                    {record.item.symbol.toUpperCase()}
+                    {record.ticker.toUpperCase()}
                   </TableCell>
                   <TableCell className="text-right">
-                    {currencyFormatter(record.item.data.price)}
+                    {currencyFormatter(record.price)}
                   </TableCell>
                   <TableCell className="text-right">
-                    {record.item.data.price_change_percentage_24h.usd > 0 ? (
+                    {currencyFormatter(record.change_amount)}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {parseFloat(record.change_percentage) > 0 ? (
                       <Badge
                         variant="outline"
                         className="bg-green-500 text-green-50"
                       >
-                        {formatGain(
-                          record.item.data.price_change_percentage_24h.usd / 100
-                        )}
+                        {formatGain(parseFloat(record.change_percentage))}
                       </Badge>
                     ) : (
                       <Badge
                         variant="outline"
                         className="bg-red-500 text-red-50"
                       >
-                        {formatGain(
-                          record.item.data.price_change_percentage_24h.usd / 100
-                        )}
+                        {formatGain(parseFloat(record.change_percentage) / 100)}
                       </Badge>
                     )}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    {new Intl.NumberFormat().format(record.volume)}
                   </TableCell>
                 </TableRow>
               );
@@ -90,4 +92,4 @@ const MarketCoinWatchCard = (props) => {
   );
 };
 
-export default MarketCoinWatchCard;
+export default MarketStockWatchCard;
