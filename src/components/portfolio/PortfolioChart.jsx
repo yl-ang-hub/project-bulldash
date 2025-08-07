@@ -9,11 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PortfolioChartArea } from "./PortfolioChartArea";
-import {
-  useQueryClient,
-  useQueries,
-  useSuspenseQuery,
-} from "@tanstack/react-query";
+import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { readDB } from "@/services/DBApiService";
 
