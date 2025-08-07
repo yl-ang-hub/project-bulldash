@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { useQueries, useSuspenseQuery } from "@tanstack/react-query";
 import { PortfolioStockWatchCard } from "./PortfolioStockWatchCard";
 import { readDB } from "@/services/DBApiService";
