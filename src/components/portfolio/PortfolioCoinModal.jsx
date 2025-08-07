@@ -24,9 +24,7 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PortfolioCoinComboBox } from "./PortfolioCoinComboBox";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
-// const PortfolioCoinComboBox = React.lazy(
-//   () => import("./PortfolioCoinComboBox")
-// );
+// const PortfolioCoinComboBox = React.lazy(() => import("./PortfolioCoinComboBox"));
 
 const PortfolioCoinModal = (props) => {
   const queryClient = useQueryClient();
@@ -45,7 +43,7 @@ const PortfolioCoinModal = (props) => {
   const qKey = props.dataType === "coin" ? ["readCoinsFromPortfolioDB"] : [];
   const data = queryClient.getQueryData(qKey);
 
-  const editCoinInPortfolioDB = useMutation({
+  const editAssetInPortfolioDB = useMutation({
     mutationFn: async (id) => {
       const res = await fetch(
         import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB/" + id,
@@ -83,7 +81,7 @@ const PortfolioCoinModal = (props) => {
     },
   });
 
-  const deleteCoinInPortfolioDB = useMutation({
+  const deleteAssetInPortfolioDB = useMutation({
     mutationFn: async (id) => {
       const res = await fetch(
         import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB/" + id,
@@ -109,8 +107,7 @@ const PortfolioCoinModal = (props) => {
     },
   });
 
-  // ISSUE: Does not re-render WatchCard & ComboBox components
-  const addCoinInPortfolioDB = useMutation({
+  const addAssetInPortfolioDB = useMutation({
     mutationFn: async ({ id, symbol, name, qty, price }) => {
       const res = await fetch(
         import.meta.env.VITE_AIRTABLE_API + "CoinsPortfolioDB",
@@ -144,8 +141,6 @@ const PortfolioCoinModal = (props) => {
       console.log("add coin is successful, callback running");
       await queryClient.invalidateQueries(["readCoinsFromPortfolioDB"]);
       await queryClient.invalidateQueries(["qQuote"]);
-      // ISSUE: No re-render of component + child despite state change or query invalidation
-      // ComboBox & useRefs not cleared & price/quantity not updated in WatchCard
       setNewQty("0");
       setNewPurchasePrice("0");
       setIdTickerOnAdd("");
@@ -169,26 +164,26 @@ const PortfolioCoinModal = (props) => {
     if (!purchasePriceRefs.current[id]) {
       purchasePriceRefs.current[id] = price;
     }
-    editCoinInPortfolioDB.mutate(id);
+    editAssetInPortfolioDB.mutate(id);
     const newState = { ...onEdit };
     newState[id] = false;
     setOnEdit(newState);
   };
 
-  const resetEditCoinState = () => {
+  const resetEditAssetState = () => {
     const newState = {};
     data?.records.forEach((datum) => (newState[datum.id] = false));
     setOnEdit(newState);
   };
 
-  const showCoinSymbolOnAdd = (id, name, symbol) => {
+  const showAssetSymbolOnAdd = (id, name, symbol) => {
     setIdTickerOnAdd(id);
     setNameOnAdd(name);
     setSymbolOnAdd(symbol.toUpperCase());
   };
 
   useEffect(() => {
-    resetEditCoinState();
+    resetEditAssetState();
   }, []);
 
   return (
@@ -288,7 +283,7 @@ const PortfolioCoinModal = (props) => {
                               variant="destructive"
                               className="rounded max-w-[70px]"
                               onClick={() =>
-                                deleteCoinInPortfolioDB.mutate(datum.id)
+                                deleteAssetInPortfolioDB.mutate(datum.id)
                               }
                             >
                               Delete
@@ -302,7 +297,7 @@ const PortfolioCoinModal = (props) => {
                         {/* TODO: Optimise and Solve long loading time */}
                         <PortfolioCoinComboBox
                           className="max-w-[100px]"
-                          showSymbolFn={showCoinSymbolOnAdd}
+                          showSymbolFn={showAssetSymbolOnAdd}
                           dropdownValue={dropdownValue}
                           setDropdownValue={setDropdownValue}
                         />
@@ -337,7 +332,7 @@ const PortfolioCoinModal = (props) => {
                               newQty,
                               newPurchasePrice
                             );
-                            addCoinInPortfolioDB.mutate({
+                            addAssetInPortfolioDB.mutate({
                               id: idTickerOnAdd,
                               name: nameOnAdd,
                               symbol: symbolOnAdd,
