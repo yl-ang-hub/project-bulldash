@@ -21,7 +21,7 @@ const MarketStockWatchCard = (props) => {
       style: "percent",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    }).format(gain);
+    }).format(gain / 100);
     if (gain > 0) {
       return "+" + formattedPercentage;
     } else {
@@ -75,7 +75,7 @@ const MarketStockWatchCard = (props) => {
                         variant="outline"
                         className="bg-red-500 text-red-50"
                       >
-                        {formatGain(parseFloat(record.change_percentage) / 100)}
+                        {formatGain(parseFloat(record.change_percentage))}
                       </Badge>
                     )}
                   </TableCell>
