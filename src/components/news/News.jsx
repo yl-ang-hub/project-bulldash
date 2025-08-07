@@ -44,7 +44,7 @@ const News = () => {
     <div className="h-screen grid grid-cols-1 place-items-center max-w-full mx-auto my-8 text-left">
       <div id="top-news">
         <div>
-          <h1 className="my-10 text-center text-4xl font-bold text-blue-400 dark:text-white">
+          <h1 className="my-10 text-center text-4xl font-bold text-blue-600 dark:text-white">
             Top News
           </h1>
         </div>
@@ -59,10 +59,12 @@ const News = () => {
                   >
                     <Link to={news.url} className="text-black !no-underline">
                       <CardHeader>
-                        <CardTitle className="mb-4">{news.headline}</CardTitle>
+                        <CardTitle className="mb-4 text-lg/6">
+                          <p>{news.headline}</p>
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p>{news.summary}</p>
+                        <p className="text-slate-500">{news.summary}</p>
                       </CardContent>
                     </Link>
                   </Card>
@@ -74,7 +76,7 @@ const News = () => {
       </div>
       <div id="crypto-news">
         <div>
-          <div className="my-10 text-center text-4xl font-bold text-blue-400 dark:text-white">
+          <div className="my-10 text-center text-4xl font-bold text-blue-600 dark:text-white">
             Top Crypto News
           </div>
         </div>
@@ -89,10 +91,12 @@ const News = () => {
                   >
                     <Link to={news.url} className="text-black !no-underline">
                       <CardHeader>
-                        <CardTitle className="mb-4">{news.headline}</CardTitle>
+                        <CardTitle className="mb-4 text-lg/6">
+                          <p>{news.headline}</p>
+                        </CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <p>{news.summary}</p>
+                        <p className="text-slate-500">{news.summary}</p>
                       </CardContent>
                     </Link>
                   </Card>

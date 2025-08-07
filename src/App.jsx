@@ -12,20 +12,20 @@ function App() {
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
-      <div className="container mx-auto mt-6 w-[500px] text-center">
-        <h1 className="mb-4 text-5xl font-extrabold dark:text-white md:text-5xl lg:text-6xl bg-gradient-to-r from-blue-600 via-green-500 to-indigo-400 inline-block text-transparent bg-clip-text">
+      <div className="mx-auto mt-6 text-center">
+        <h1 className="mb-4 text-8xl font-extrabold dark:text-white md:text-5xl lg:text-6xl bg-gradient-to-r from-blue-500 via-green-500 to-indigo-400  hover:from-purple-600 hover:via-orange-600 hover:to-indigo-600 inline-block text-transparent bg-clip-text">
           BULLDASH
         </h1>
         <div>
           <Tabs defaultValue="portfolio" className="block my-6">
-            <TabsList className="text-center text-4xl font-bold">
+            <TabsList className="text-center font-bold rounded-xl bg-slate-300 my-1">
               <TabsTrigger
                 value="portfolio"
-                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+                className="px-4 py-3 border-none rounded-xl  hover:bg-slate-200"
               >
                 <NavLink
                   to="/portfolio"
-                  className="!no-underline text-1xl font-bold dark:text-blue-200"
+                  className="w-[100px] !no-underline text-lg font-bold dark:text-blue-200"
                 >
                   Portfolio
                 </NavLink>
@@ -33,22 +33,22 @@ function App() {
 
               <TabsTrigger
                 value="market"
-                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+                className="px-4 py-3 border-none rounded-xl  hover:bg-slate-200"
               >
                 <NavLink
                   to="/market"
-                  className="!no-underline text-1xl font-bold dark:text-blue-200"
+                  className="w-[100px] !no-underline text-lg font-bold dark:text-blue-200"
                 >
                   Market
                 </NavLink>
               </TabsTrigger>
               <TabsTrigger
                 value="news"
-                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+                className="px-4 py-3 border-none rounded-xl  hover:bg-slate-200"
               >
                 <NavLink
                   to="/news"
-                  className="!no-underline text-1xl font-bold dark:text-blue-200"
+                  className="w-[100px] !no-underline text-lg font-bold dark:text-blue-200"
                 >
                   News
                 </NavLink>
