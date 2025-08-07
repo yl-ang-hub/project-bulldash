@@ -6,6 +6,7 @@ import Watchlist from "./components/watchlist/Watchlist";
 import Market from "./components/market/Market";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
+import News from "./components/news/News";
 
 function App() {
   const queryClient = useQueryClient();
@@ -30,17 +31,7 @@ function App() {
                   Portfolio
                 </NavLink>
               </TabsTrigger>
-              <TabsTrigger
-                value="watchlist"
-                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
-              >
-                <NavLink
-                  to="/watchlist"
-                  className="text-black font-normal !no-underline"
-                >
-                  Watchlist
-                </NavLink>
-              </TabsTrigger>
+
               <TabsTrigger
                 value="market"
                 className="px-4 py-3 border-none rounded  hover:bg-gray-50"
@@ -50,6 +41,17 @@ function App() {
                   className="text-black font-normal !no-underline"
                 >
                   Market
+                </NavLink>
+              </TabsTrigger>
+              <TabsTrigger
+                value="news"
+                className="px-4 py-3 border-none rounded  hover:bg-gray-50"
+              >
+                <NavLink
+                  to="/news"
+                  className="text-black font-normal !no-underline"
+                >
+                  News
                 </NavLink>
               </TabsTrigger>
             </TabsList>
@@ -64,19 +66,20 @@ function App() {
                   </TabsContent>
                 }
               />
-              <Route
-                path="/watchlist"
-                element={
-                  <TabsContent value="watchlist">
-                    <Watchlist />
-                  </TabsContent>
-                }
-              />
+
               <Route
                 path="/market"
                 element={
                   <TabsContent value="market">
                     <Market />
+                  </TabsContent>
+                }
+              />
+              <Route
+                path="/news"
+                element={
+                  <TabsContent value="news">
+                    <News />
                   </TabsContent>
                 }
               />

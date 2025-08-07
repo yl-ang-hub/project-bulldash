@@ -1,5 +1,14 @@
+import { useQueryClient } from "@tanstack/react-query";
+
 const Market = () => {
-  return <div>This is the market trends</div>;
+  const queryClient = useQueryClient();
+
+  return (
+    <div className="container">
+      <div className="container">Market coin card here</div>
+      <div className="container"></div>
+    </div>
+  );
 };
 
 export default Market;
