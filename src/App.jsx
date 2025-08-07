@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Navigate, NavLink, Route, Routes } from "react-router-dom";
 import Portfolio from "./components/portfolio/Portfolio";
-import Watchlist from "./components/watchlist/Watchlist";
 import Market from "./components/market/Market";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LoadingSpinner } from "./components/ui/LoadingSpinner";
