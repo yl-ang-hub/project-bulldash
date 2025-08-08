@@ -124,6 +124,3 @@ dist/
 
 .idea/
 .vscode/
-
-# Ignore notes
-*.md
