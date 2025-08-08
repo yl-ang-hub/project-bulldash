@@ -2,10 +2,10 @@
 
 BullDash is a personal portfolio manager that tracks your stock and cryptocurrency holdings. It provides a quick overview of the losses or gains in your portfolio, current and historical prices of your holdings, as well as the trending stocks, coins and news.
 
-![portfolio view in the app](./readme/bulldash-portfolio1)
-![portfolio view in the app](./readme/bulldash-portfolio2)
-![trending coins and stocks view in the app](./readme/bulldash-trends)
-![top stock and crypto news view in the app](./readme/bulldash-news)
+![portfolio view in the app](./readme/bulldash-portfolio1.png)
+![portfolio view in the app](./readme/bulldash-portfolio2.png)
+![trending coins and stocks view in the app](./readme/bulldash-trends.png)
+![top stock and crypto news view in the app](./readme/bulldashnews.png)
 
 ## Running the app
 
@@ -52,7 +52,7 @@ For the user interface, I decided to use a minimalistic design concept and had t
 
 Since this app will interface with several APIs to pull the relevant market data for both cryptocurrency and stock, I separated the React components to handle the stocks and crypto data and display accordingly. This will avoid excessive manipulation of the data from the API in order to fit into the components, and allow me to customise where needed. TanStack Query is used to facilitate the data fetching with multiple APIs and overall state management.
 
-![React component tree for this app](./readme/component_tree.jpg)
+![React component tree for this app](./readme/component_tree.png)
 
 Airtable is used as a simplistic and hassle-free database for the app to track holdings (although alternatives will need to be considered in future update in view of security and confidentiality). The tables and fields are tabulated as follows:
 
