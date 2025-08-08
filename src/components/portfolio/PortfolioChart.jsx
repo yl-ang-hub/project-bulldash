@@ -18,7 +18,6 @@ const PortfolioChart = () => {
   // COIN: get portfolio data from cache
   const [coinIds, setCoinIds] = useState([]);
   const [stockIds, setStockIds] = useState([]);
-  const [assetIds, setAssetIds] = useState([]);
   const [selectId, setSelectId] = useState("");
 
   const qCoinsFromPortfolioDB = useSuspenseQuery({
@@ -43,22 +42,12 @@ const PortfolioChart = () => {
     );
     setStockIds(stockIdTickerArray);
     const idTickerArray = [...coinIdTickerArray];
-    stockIdTickerArray.forEach((id) => idTickerArray.push(id));
-    setAssetIds(idTickerArray);
     setSelectId(idTickerArray[0]);
   }, [qCoinsFromPortfolioDB.data, qStocksFromPortfolioDB.data]);
-
-  // useEffect(() => {
-  //   queryClient.invalidateQueries(["qCoinsUSDChartData"]);
-  // }, [selectCoinId]);
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <div className="w-[760px] justify-self-center">
-        {/* <p>{coinPortfolio ? JSON.stringify(coinPortfolio) : ""}</p>
-        <p>
-          {coinPortfolio ? getFormattedCoinChartData() : "Didn't run formatter"}
-        </p> */}
         <Select
           className="rounded"
           value={selectId}

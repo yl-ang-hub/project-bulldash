@@ -1,19 +1,7 @@
 import React, { Suspense } from "react";
-import {
-  useQuery,
-  useSuspenseQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { Badge } from "lucide-react";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 
 const News = () => {

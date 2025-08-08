@@ -25,7 +25,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { PortfolioCoinComboBox } from "./PortfolioCoinComboBox";
 import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { ScrollBar } from "../ui/scroll-area";
-// const PortfolioCoinComboBox = React.lazy(() => import("./PortfolioCoinComboBox"));
 
 const PortfolioCoinModal = (props) => {
   const queryClient = useQueryClient();
@@ -294,7 +293,6 @@ const PortfolioCoinModal = (props) => {
                     })}
                     <TableRow>
                       <TableCell>
-                        {/* TODO: Optimise and Solve long loading time */}
                         <PortfolioCoinComboBox
                           className="max-w-[100px]"
                           showSymbolFn={showAssetSymbolOnAdd}
@@ -349,9 +347,6 @@ const PortfolioCoinModal = (props) => {
                   Return
                 </Button>
               </DialogClose>
-              {/* <Button type="" className="rounded">
-              Save changes
-            </Button> */}
             </DialogFooter>
           </DialogContent>
         </form>

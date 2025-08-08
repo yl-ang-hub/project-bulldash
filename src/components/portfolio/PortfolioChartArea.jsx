@@ -22,10 +22,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export function PortfolioChartArea(props) {
-  const queryClient = useQueryClient();
   const [timeRange, setTimeRange] = useState("90d");
 
   // COIN: API call to get data for charting

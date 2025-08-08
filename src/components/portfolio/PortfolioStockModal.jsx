@@ -292,7 +292,6 @@ export const PortfolioStockModal = (props) => {
                       })}
                       <TableRow>
                         <TableCell>
-                          {/* TODO: Optimise and Solve long loading time */}
                           <PortfolioStockComboBox
                             className="max-w-[100px]"
                             showSymbolFn={showAssetSymbolOnAdd}
@@ -347,9 +346,6 @@ export const PortfolioStockModal = (props) => {
                     Return
                   </Button>
                 </DialogClose>
-                {/* <Button type="" className="rounded">
-              Save changes
-            </Button> */}
               </DialogFooter>
             </DialogContent>
           </form>

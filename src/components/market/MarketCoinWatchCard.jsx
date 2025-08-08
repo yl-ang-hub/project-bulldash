@@ -7,11 +7,8 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Badge } from "../ui/badge";
-// import { useQueryClient } from "@tanstack/react-query";
 
 const MarketCoinWatchCard = (props) => {
-  // const queryClient = useQueryClient();
-
   const currencyFormatter = (amount) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
