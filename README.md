@@ -5,7 +5,7 @@ BullDash is a personal portfolio manager that tracks your stock and cryptocurren
 ![portfolio view in the app](./readme/bulldash-portfolio1.png)
 ![portfolio view in the app](./readme/bulldash-portfolio2.png)
 ![trending coins and stocks view in the app](./readme/bulldash-trends.png)
-![top stock and crypto news view in the app](./readme/bulldashnews.png)
+![top stock and crypto news view in the app](./readme/bulldash-news.png)
 
 ## Running the app
 
